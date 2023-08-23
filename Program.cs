@@ -1,4 +1,5 @@
 using SaleSavvy_API.Interface;
+using SaleSavvy_API.Repositories;
 using SaleSavvy_API.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,6 +12,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddSingleton<IAutenticationService, AutenticationService>();
+builder.Services.AddSingleton<IAutenticationRepository, AutenticationRepository>();
 
 var app = builder.Build();
 

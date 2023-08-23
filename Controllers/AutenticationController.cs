@@ -4,7 +4,7 @@ using SaleSavvy_API.Models;
 
 namespace SaleSavvy_API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/autentication")]
     [ApiController]
     public class AutenticationController : ControllerBase
     {
@@ -14,11 +14,10 @@ namespace SaleSavvy_API.Controllers
             _autenticationService = autenticationService;
         }
 
-        [HttpPost]
-        public IActionResult InsertLogin([FromBody]InputLogin input)
+        [HttpPost("/login")]
+        public async Task<OutputLogin> InsertLogin([FromBody]InputLogin input)
         {
-            _autenticationService.Validatelogin(input);
-            return Ok(input);
+            return await _autenticationService.Validatelogin(input);
         }
     }
 }
