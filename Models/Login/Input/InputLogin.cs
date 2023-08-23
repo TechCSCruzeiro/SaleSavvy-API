@@ -5,11 +5,11 @@
         /// <summary>
         /// 
         /// </summary>
-        public string login { get; set; }
+        public string Login { get; set; }
         /// <summary>
         /// 
         /// </summary>
-        public string password { get; set; }
+        public string Password { get; set; }
 
     }
 }
