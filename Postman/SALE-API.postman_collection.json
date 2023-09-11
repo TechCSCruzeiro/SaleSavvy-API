@@ -1,0 +1,230 @@
+{
+	"info": {
+		"_postman_id": "af3f7b6b-d55b-40f1-b079-a339756925ee",
+		"name": "SALE-API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "29660154"
+	},
+	"item": [
+		{
+			"name": "Login",
+			"item": [
+				{
+					"name": "001 - LOGIN: EMAIL NAO CADASTRADO",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"001 - LOGIN - EMAIL NAO CADASTRADO\", function(){\r",
+									"    if(pm.response.code == 200 && jsonData.returnCode == 401)\r",
+									"    {\r",
+									"        pm.expect(jsonData.error.menssageError[0]).to.eql(\"Email Não Cadastrado\")\r",
+									"        pm.expect(jsonData.employeeLogin).to.be.null\r",
+									"    }\r",
+									"    else{\r",
+									"        pm.expect.fail(JSON.stringify(jsonData) + \"Return Status code\" + pm.response.code)\r",
+									"    }\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "accept",
+								"value": "text/plain"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "",
+								"value": "",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"Email\": \"{{EMAIL-SEMCADASTRO}}\",\r\n  \"Password\": \"{{SENHA-SEMCADASTRO}}\"\r\n}"
+						},
+						"url": {
+							"raw": "https://localhost:7142/login",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7142",
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "002 - LOGIN: SENHA INVALIDA",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"001 - LOGIN - EMAIL NAO CADASTRADO\", function(){\r",
+									"    if(pm.response.code == 200 && jsonData.returnCode == 401)\r",
+									"    {\r",
+									"        pm.expect(jsonData.error.menssageError[0]).to.eql(\"Senha Invalida - TENTE NOVAMENTE\")\r",
+									"        pm.expect(jsonData.employeeLogin.password).to.be.empty\r",
+									"        pm.expect(jsonData.employeeLogin.name).to.be.empty\r",
+									"    }\r",
+									"    else{\r",
+									"        pm.expect.fail(JSON.stringify(jsonData) + \"Return Status code\" + pm.response.code)\r",
+									"    }\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "accept",
+								"value": "text/plain"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"email\": \"{{EMAIL-LOGINSUCESSO}}\",\r\n  \"password\": \"{{SENHA-SENHAINVALIDA}}\"\r\n}"
+						},
+						"url": {
+							"raw": "https://localhost:7142/login",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7142",
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "003 - LOGIN: LOGIN COM SUCESSO",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"003 - LOGIN: LOGIN COM SUCESSO\", function(){\r",
+									"    if(pm.response.code == 200 && jsonData.returnCode == 200)\r",
+									"    {\r",
+									"        pm.expect(jsonData.error).to.be.null;\r",
+									"        pm.expect(jsonData.employeeLogin.email).to.eql(\"gabrielpiassa@hotmail.com\")\r",
+									"        \r",
+									"    }else{\r",
+									"        pm.expect.fail(JSON.stringify(jsonData) + \"Return Status code\" + pm.response.code)\r",
+									"    }\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "accept",
+								"value": "text/plain"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"email\": \"{{EMAIL-LOGINSUCESSO}}\",\r\n  \"password\": \"{{SENHA-LOGINSUCESSO}}\"\r\n}"
+						},
+						"url": {
+							"raw": "https://localhost:7142/login",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7142",
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "EMAIL-SEMCADASTRO",
+			"value": "emailerrado@email.com",
+			"type": "string"
+		},
+		{
+			"key": "SENHA-SEMCADASTRO",
+			"value": "senhaerrada",
+			"type": "string"
+		},
+		{
+			"key": "SENHA-SENHAINVALIDA",
+			"value": "senhainvalida",
+			"type": "string"
+		},
+		{
+			"key": "EMAIL-LOGINSUCESSO",
+			"value": "gabrielpiassa@hotmail.com",
+			"type": "string"
+		},
+		{
+			"key": "SENHA-LOGINSUCESSO",
+			"value": "12345678",
+			"type": "string"
+		}
+	]
+}

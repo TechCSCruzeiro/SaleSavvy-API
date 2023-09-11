@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SaleSavvy_API.Interface;
 using SaleSavvy_API.Models;
+using SaleSavvy_API.Models.Login.Input;
 
 namespace SaleSavvy_API.Controllers
 {
@@ -14,8 +15,13 @@ namespace SaleSavvy_API.Controllers
             _autenticationService = autenticationService;
         }
 
+        /// <summary>
+        /// Inserir Login de acesso ao controle de estoque
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
         [HttpPost("/login")]
-        public async Task<OutputLogin> InsertLogin([FromBody]InputLogin input)
+        public async Task<OutputGetLogin> InsertLogin([FromBody] InputLogin input)
         {
             return await _autenticationService.Validatelogin(input);
         }

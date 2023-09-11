@@ -1,4 +1,6 @@
 ﻿using SaleSavvy_API.Models;
+using SaleSavvy_API.Models.Login;
+using SaleSavvy_API.Models.Login.Input;
 
 namespace SaleSavvy_API.Interface
 {
@@ -9,6 +11,6 @@ namespace SaleSavvy_API.Interface
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        Task<OutputLogin> GetLogin(InputLogin input, Guid id);
+        Task<Login> GetLogin(InputLogin input);
     }
 }

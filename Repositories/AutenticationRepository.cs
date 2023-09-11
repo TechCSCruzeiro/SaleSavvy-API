@@ -1,32 +1,38 @@
-﻿using SaleSavvy_API.Interface;
+﻿using Dapper;
+using SaleSavvy_API.Interface;
 using SaleSavvy_API.Models;
 using SaleSavvy_API.Models.Login;
+using SaleSavvy_API.Models.Login.Entity;
+using SaleSavvy_API.Models.Login.Input;
 using System.Data;
+using Microsoft.Data.SqlClient;
 
-namespace SaleSavvy_API.Repositories
+
+public class AutenticationRepository : IAutenticationRepository
 {
-    public class AutenticationRepository : IAutenticationRepository
+
+    private readonly string _connectionString;
+
+    public AutenticationRepository(IConfiguration configuration)
     {
+        _connectionString = configuration.GetConnectionString("MyConnectionString");
+    }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="input"></param>
-        /// <returns></returns>
-        public async Task<OutputLogin> GetLogin(InputLogin input, Guid id)
+    public async Task<Login> GetLogin(InputLogin input)
+    {
+        using (IDbConnection dbConnection = new SqlConnection(_connectionString))
         {
-            var result = new OutputLogin();
+            string sql = "SELECT * FROM [dbo].[User] WHERE Email = @Email";
+            var entity = dbConnection.QuerySingleOrDefault<LoginEntity>(sql, new { Email = input.Email.ToLower() }); ;
 
-            try
+            if (entity != null)
             {
-                result.ReturnCode = ReturnCode.exito;
-                return result;
-
-            }catch(Exception ex)
-            {
-                result.ReturnCode = ReturnCode.failed;
-                return result;
+                return new Login(entity);
             }
-        }
+            else
+            {
+                return new Login().AddError("Email Não Cadastrado");
+            }
+        };
     }
 }

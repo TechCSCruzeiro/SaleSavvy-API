@@ -3,6 +3,6 @@
     public enum ReturnCode
     {
         exito = 200,
-        failed = 000 
+        failed = 401 
     }
 }

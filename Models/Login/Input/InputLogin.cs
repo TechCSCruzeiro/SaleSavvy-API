@@ -2,12 +2,16 @@
 {
     public class InputLogin
     {
+
+        public Guid ID => Guid.NewGuid();
+
         /// <summary>
-        /// 
+        /// email de acesso ao controlador de estoque
         /// </summary>
-        public string Login { get; set; }
+        public string Email { get; set; }
+
         /// <summary>
-        /// 
+        /// senha de acesso ao controlador de estoque
         /// </summary>
         public string Password { get; set; }
 
