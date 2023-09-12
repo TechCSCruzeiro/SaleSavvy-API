@@ -2,6 +2,8 @@
 using SaleSavvy_API.Interface;
 using SaleSavvy_API.Models;
 using SaleSavvy_API.Models.Login.Input;
+using SaleSavvy_API.Models.Register.Input;
+using SaleSavvy_API.Models.Register.Output;
 
 namespace SaleSavvy_API.Controllers
 {
@@ -24,6 +26,17 @@ namespace SaleSavvy_API.Controllers
         public async Task<OutputGetLogin> InsertLogin([FromBody] InputLogin input)
         {
             return await _autenticationService.Validatelogin(input);
+        }
+
+        /// <summary>
+        /// Inserir Login de acesso ao controle de estoque
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        [HttpPost("/register")]
+        public async Task<OutputRegister> RegisterUser([FromBody] InputRegister input)
+        {
+            return await _autenticationService.ValidateRegister(input);
         }
     }
 }

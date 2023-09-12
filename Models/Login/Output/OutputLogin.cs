@@ -1,4 +1,4 @@
-﻿using SaleSavvy_API.Models.Login;
+﻿using SaleSavvy_API.Models;
 using System;
 using System.Security.Cryptography.X509Certificates;
 

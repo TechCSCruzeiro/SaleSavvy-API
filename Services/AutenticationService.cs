@@ -2,6 +2,8 @@
 using SaleSavvy_API.Models;
 using SaleSavvy_API.Models.Login;
 using SaleSavvy_API.Models.Login.Input;
+using SaleSavvy_API.Models.Register.Input;
+using SaleSavvy_API.Models.Register.Output;
 
 namespace SaleSavvy_API.Services
 {
@@ -61,5 +63,9 @@ namespace SaleSavvy_API.Services
             return output;
         }
 
+        public async Task<OutputRegister> ValidateRegister(InputRegister input)
+        {
+            throw new ArgumentException("Conectou");
+        }
     }
 }
