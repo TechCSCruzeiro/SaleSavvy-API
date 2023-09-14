@@ -2,6 +2,7 @@
 using SaleSavvy_API.Models;
 using SaleSavvy_API.Models.Login;
 using SaleSavvy_API.Models.Login.Input;
+using SaleSavvy_API.Models.Register;
 using SaleSavvy_API.Models.Register.Input;
 using SaleSavvy_API.Models.Register.Output;
 
@@ -22,41 +23,37 @@ namespace SaleSavvy_API.Services
         /// <returns></returns>n
         public async Task<OutputGetLogin> Validatelogin(InputLogin input)
         {
-            var minimumPasswordLength = 8;
-            var maximumPasswordLength = 20;
             var validate = new Validate();
             var output = new OutputGetLogin();
+            var validateLogin = new ValidateLogin();
 
-            //Validar se senha entra na regra de min e max
-            if (input.Password.Length < minimumPasswordLength || input.Password.Length > maximumPasswordLength)
+            var errorInstance = validateLogin.ValidateInsertion(input);
+
+            if (errorInstance.Error != null && errorInstance.Error.MenssageError.Length > 0)
             {
-                throw new ArgumentException("Quantidade de Caracteres invalido", "Min:" + minimumPasswordLength + "Max:" + maximumPasswordLength);
-            }
-
-            //Validar se email é vazio ou null
-            if (string.IsNullOrEmpty(input.Email))
+                output = errorInstance;
+            } 
+            else 
             {
-                throw new ArgumentException("Campo de Login Vazio");
-            }
+                //Consultar email na base
+                var getLogin = await _autenticationRepository.GetLogin(input);
 
-            //Consultar email na base
-            var getLogin = await _autenticationRepository.GetLogin(input);
-
-            //Validar returnCode da consulta 
-            if (getLogin.ReturnCode.Equals(ReturnCode.failed))
-            {
-                //Retornar error da consulta
-                output.AddError(getLogin.ReturnCode, getLogin.Error.MenssageError);
-            }
-            else
-            {
-                //Realizar comparacao de senha inserida com senha da base
-                output = validate.ValidateLogin(input, getLogin);
-
-                //Retornar Error caso a compracao de error
-                if (output.ReturnCode.Equals(ReturnCode.failed))
+                //Validar returnCode da consulta 
+                if (getLogin.ReturnCode.Equals(ReturnCode.failed))
                 {
-                    output.AddError(output.ReturnCode, output.Error.MenssageError);
+                    //Retornar error da consulta
+                    output.AddError(getLogin.ReturnCode, getLogin.Error.MenssageError);
+                }
+                else
+                {
+                    //Realizar comparacao de senha inserida com senha da base
+                    output = validate.ValidateLogin(input, getLogin);
+
+                    //Retornar Error caso a compracao de error
+                    if (output.ReturnCode.Equals(ReturnCode.failed))
+                    {
+                        output.AddError(output.ReturnCode, output.Error.MenssageError);
+                    }
                 }
             }
 
@@ -65,7 +62,34 @@ namespace SaleSavvy_API.Services
 
         public async Task<OutputRegister> ValidateRegister(InputRegister input)
         {
-            throw new ArgumentException("Conectou");
+            var output = new OutputRegister(); 
+            var validate = new ValidateRegister();
+            var validateRegister = validate.ValidateInsertRegister(input);
+
+            if (validateRegister.Error != null && validateRegister.Error.MenssageError.Length > 0)
+            {
+                output.Error = validateRegister.Error;
+            }
+            else
+            {
+                var insertRegister = await _autenticationRepository.InsertRegister(input);
+
+                if (insertRegister.ReturnCode.Equals(ReturnCode.exito)) 
+                {
+                    output.ReturnCode = insertRegister.ReturnCode;
+
+                }
+                else
+                {
+                    var listError = new List<string>();
+
+                    listError.Add(insertRegister.ErrorMessage);
+
+                    output.AddError(insertRegister.ReturnCode, listError.ToArray());
+                }
+            }
+
+            return output;
         }
     }
 }

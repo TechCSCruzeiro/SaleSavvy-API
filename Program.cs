@@ -1,7 +1,6 @@
 using SaleSavvy_API.Interface;
+using SaleSavvy_API.Repositories;
 using SaleSavvy_API.Services;
-using System.Data.SqlClient;
-using System.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +13,16 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<IAutenticationService, AutenticationService>();
 builder.Services.AddSingleton<IAutenticationRepository, AutenticationRepository>();
 
+builder.Services.AddCors(option =>
+{
+    option.AddPolicy("AllowAllOrigins", builder =>
+    {
+        builder.AllowAnyOrigin();
+        builder.AllowAnyHeader();
+        builder.AllowAnyMethod();
+    });
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -24,7 +33,13 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseRouting();
+app.UseCors("AllowAllOrigins");
 app.UseAuthorization();
-app.MapControllers();
+
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllers();
+});
 
 app.Run();

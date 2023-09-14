@@ -107,7 +107,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"email\": \"{{EMAIL-LOGINSUCESSO}}\",\r\n  \"password\": \"{{SENHA-SENHAINVALIDA}}\"\r\n}"
+							"raw": "{\r\n  \"email\": \"{{EMAIL-SUCESSO}}\",\r\n  \"password\": \"{{SENHA-SENHAINVALIDA}}\"\r\n}"
 						},
 						"url": {
 							"raw": "https://localhost:7142/login",
@@ -161,7 +161,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"email\": \"{{EMAIL-LOGINSUCESSO}}\",\r\n  \"password\": \"{{SENHA-LOGINSUCESSO}}\"\r\n}"
+							"raw": "{\r\n  \"email\": \"{{EMAIL-SUCESSO}}\",\r\n  \"password\": \"{{SENHA-SUCESSO}}\"\r\n}"
 						},
 						"url": {
 							"raw": "https://localhost:7142/login",
@@ -172,6 +172,331 @@
 							"port": "7142",
 							"path": [
 								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "004- LOGIN: EMAIL VAZIO E SENHA FORA DO PADRAO",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"004- LOGIN: EMAIL VAZIO E SENHA FORA DO PADRAO\", function(){\r",
+									"    if(pm.response.code == 200 && jsonData.returnCode == 401)\r",
+									"    {\r",
+									"        pm.expect(jsonData.error.menssageError[0]).to.eql(\"Senha nao se encaixa no padrão do sistema\")\r",
+									"        pm.expect(jsonData.error.menssageError[1]).to.eql(\"Campo email não pode ser vazio\")\r",
+									"    }\r",
+									"    else{\r",
+									"        pm.expect.fail(JSON.stringify(jsonData) + \"Return Status code\" + pm.response.code)\r",
+									"    }\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "accept",
+								"value": "text/plain"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "",
+								"value": "",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"Email\": \"\",\r\n  \"Password\": \"123\"\r\n}"
+						},
+						"url": {
+							"raw": "https://localhost:7142/login",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7142",
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Register",
+			"item": [
+				{
+					"name": "001 - REGISTER: EMAIL JA CADASTRADO",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.sendRequest({\r",
+									"  url: 'https://www.4devs.com.br/ferramentas_online.php',\r",
+									"  method: 'POST',\r",
+									"  header: {\r",
+									"    // Você pode adicionar headers aqui, se necessário\r",
+									"  },\r",
+									"  body: {\r",
+									"    mode: 'urlencoded',\r",
+									"    urlencoded: [\r",
+									"      { key: 'acao', value: 'gerar_pessoa' },\r",
+									"      { key: 'sexo', value: 'I' },\r",
+									"      { key: 'pontuacao', value: 'C' },\r",
+									"      { key: 'idade', value: '0' },\r",
+									"      { key: 'cep_estado', value: '' },\r",
+									"      { key: 'txt_qtde', value: '1' },\r",
+									"      { key: 'cep_cidade', value: '' },\r",
+									"    ],\r",
+									"  },\r",
+									"}, function(err, res) {\r",
+									"  if (err) {\r",
+									"    console.log(err);\r",
+									"  }\r",
+									"  pm.collectionVariables.set('NameGenerate', res.json()[0].nome);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"001 - REGISTER: EMAIL JA CADASTRADO\", function(){\r",
+									"    if(pm.response.code == 200 && jsonData.returnCode == 401)\r",
+									"    {\r",
+									"        pm.expect(jsonData.error.menssageError[0]).to.equals(\"Email ja Cadastrado\");\r",
+									"        \r",
+									"    }else{\r",
+									"        pm.expect.fail(JSON.stringify(jsonData) + \"Return Status code\" + pm.response.code)\r",
+									"    }\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "accept",
+								"value": "text/plain"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"{{NAME-GENERATE}}\",\r\n  \"email\": \"{{REGISTER-EMAILJACADASTRADO}}\",\r\n  \"password\": \"{{SENHA-SUCESSO}}\"\r\n}"
+						},
+						"url": {
+							"raw": "https://localhost:7142/register",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7142",
+							"path": [
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "002 - REGISTER: NOME JA CADASTRADO",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.sendRequest({\r",
+									"  url: 'https://www.4devs.com.br/ferramentas_online.php',\r",
+									"  method: 'POST',\r",
+									"  header: {\r",
+									"    // Você pode adicionar headers aqui, se necessário\r",
+									"  },\r",
+									"  body: {\r",
+									"    mode: 'urlencoded',\r",
+									"    urlencoded: [\r",
+									"      { key: 'acao', value: 'gerar_pessoa' },\r",
+									"      { key: 'sexo', value: 'I' },\r",
+									"      { key: 'pontuacao', value: 'C' },\r",
+									"      { key: 'idade', value: '0' },\r",
+									"      { key: 'cep_estado', value: '' },\r",
+									"      { key: 'txt_qtde', value: '1' },\r",
+									"      { key: 'cep_cidade', value: '' },\r",
+									"    ],\r",
+									"  },\r",
+									"}, function(err, res) {\r",
+									"  if (err) {\r",
+									"    console.log(err);\r",
+									"  }\r",
+									"  pm.collectionVariables.set('EMAIL-GENERATE', res.json()[0].email);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"002 - REGISTER: NOME JA CADASTRADO \", function(){\r",
+									"    if(pm.response.code == 200 && jsonData.returnCode == 401)\r",
+									"    {\r",
+									"        pm.expect(jsonData.error.menssageError[0]).to.equals(\"Nome ja Cadastrado\");\r",
+									"        \r",
+									"    }else{\r",
+									"        pm.expect.fail(JSON.stringify(jsonData) + \"Return Status code\" + pm.response.code)\r",
+									"    }\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "accept",
+								"value": "text/plain"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"{{NAME-JACADASTRADO}}\",\r\n  \"email\": \"{{EMAIL-GENERATE}}\",\r\n  \"password\": \"{{SENHA-SUCESSO}}\"\r\n}"
+						},
+						"url": {
+							"raw": "https://localhost:7142/register",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7142",
+							"path": [
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "003 - REGISTER: CADASTRO COM SUCESSO",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.sendRequest({\r",
+									"  url: 'https://www.4devs.com.br/ferramentas_online.php',\r",
+									"  method: 'POST',\r",
+									"  header: {\r",
+									"    // Você pode adicionar headers aqui, se necessário\r",
+									"  },\r",
+									"  body: {\r",
+									"    mode: 'urlencoded',\r",
+									"    urlencoded: [\r",
+									"      { key: 'acao', value: 'gerar_pessoa' },\r",
+									"      { key: 'sexo', value: 'I' },\r",
+									"      { key: 'pontuacao', value: 'C' },\r",
+									"      { key: 'idade', value: '0' },\r",
+									"      { key: 'cep_estado', value: '' },\r",
+									"      { key: 'txt_qtde', value: '1' },\r",
+									"      { key: 'cep_cidade', value: '' },\r",
+									"    ],\r",
+									"  },\r",
+									"}, function(err, res) {\r",
+									"  if (err) {\r",
+									"    console.log(err);\r",
+									"  }\r",
+									"  pm.collectionVariables.set('EMAIL-GENERATE', res.json()[0].email);\r",
+									"  console.log(res)\r",
+									"  pm.collectionVariables.set('NAME-GENERATE', res.json()[0].nome);\r",
+									"  console.log(res)\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"003 - REGISTER: CADASTRO COM SUCESSO\", function(){\r",
+									"    if(pm.response.code == 200 && jsonData.returnCode == 200)\r",
+									"    {\r",
+									"        pm.expect(jsonData.error).to.be.null\r",
+									"        \r",
+									"    }else{\r",
+									"        pm.expect.fail(JSON.stringify(jsonData) + \"Return Status code\" + pm.response.code)\r",
+									"    }\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "accept",
+								"value": "text/plain"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"{{NAME-GENERATE}}\",\r\n  \"email\": \"{{EMAIL-GENERATE}}\",\r\n  \"password\": \"{{SENHA-SUCESSO}}\"\r\n}"
+						},
+						"url": {
+							"raw": "https://localhost:7142/register",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7142",
+							"path": [
+								"register"
 							]
 						}
 					},
@@ -217,14 +542,38 @@
 			"type": "string"
 		},
 		{
-			"key": "EMAIL-LOGINSUCESSO",
+			"key": "EMAIL-SUCESSO",
 			"value": "gabrielpiassa@hotmail.com",
 			"type": "string"
 		},
 		{
-			"key": "SENHA-LOGINSUCESSO",
+			"key": "SENHA-SUCESSO",
 			"value": "12345678",
 			"type": "string"
+		},
+		{
+			"key": "REGISTER-EMAILJACADASTRADO",
+			"value": "piass@gmail.com",
+			"type": "string"
+		},
+		{
+			"key": "NAME-JACADASTRADO",
+			"value": "Piassa",
+			"type": "string"
+		},
+		{
+			"key": "NAME-GENERATE",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "EMAIL-GENERATE",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "NameGenerate",
+			"value": ""
 		}
 	]
 }

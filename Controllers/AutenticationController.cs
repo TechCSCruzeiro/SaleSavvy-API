@@ -24,12 +24,12 @@ namespace SaleSavvy_API.Controllers
         /// <returns></returns>
         [HttpPost("/login")]
         public async Task<OutputGetLogin> InsertLogin([FromBody] InputLogin input)
-        {
+       {
             return await _autenticationService.Validatelogin(input);
         }
 
         /// <summary>
-        /// Inserir Login de acesso ao controle de estoque
+        /// Cadastrar
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
