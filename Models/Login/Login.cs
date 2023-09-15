@@ -11,7 +11,7 @@ namespace SaleSavvy_API.Models.Login
         public Login(LoginEntity output)
         {
             Id = output.Id;
-            EmployeeLogin = new EmployeeLogin(output.Email, output.Password, output.Name);
+            EmployeeLogin = new Employee(output.Email, output.Password, output.Name);
             this.ReturnCode = ReturnCode.exito;
         }
 
@@ -22,7 +22,7 @@ namespace SaleSavvy_API.Models.Login
         }
 
         public Guid Id { get; set; }
-        public EmployeeLogin EmployeeLogin { get; set; }
+        public Employee EmployeeLogin { get; set; }
         public Error Error { get; set; }
         public ReturnCode ReturnCode { get; set; }
 

@@ -2,10 +2,10 @@
 
 namespace SaleSavvy_API.Models.Login
 {
-    public class EmployeeLogin
+    public class Employee
     {
-        public EmployeeLogin() { }
-        public EmployeeLogin(string email, string password, string name)
+        public Employee() { }
+        public Employee(string email, string password, string name)
         {
             this.Email = email;
             this.Password = password;
@@ -16,9 +16,9 @@ namespace SaleSavvy_API.Models.Login
         public string Password { get; set; }
         public string Name { get; set; }
 
-        public EmployeeLogin AddEmployee(LoginEntity entity)
+        public Employee AddEmployee(LoginEntity entity)
         {
-            var employee = new EmployeeLogin();
+            var employee = new Employee();
 
             employee.Email = entity.Email;
             employee.Password = entity.Password;

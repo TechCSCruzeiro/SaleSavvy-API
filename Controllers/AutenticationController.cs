@@ -9,7 +9,7 @@ namespace SaleSavvy_API.Controllers
 
     [ApiController]
     [Route("api/[Controller]")]
-    public class AutenticationController : ControllerBase
+    public class AutenticationController : Controller
     {
         IAutenticationService _autenticationService;
         public AutenticationController(IAutenticationService autenticationService)

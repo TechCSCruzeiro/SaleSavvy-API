@@ -12,13 +12,13 @@
             var input = login.EmployeeLogin;
 
             this.Id = login.Id;
-            this.EmployeeLogin = new EmployeeLogin(input.Email, new string('*', input.Password.Length), input.Name);
+            this.EmployeeLogin = new Employee(input.Email, new string('*', input.Password.Length), input.Name);
             this.ReturnCode = login.ReturnCode;
 
         }
 
         public Guid Id { get; set; }
-        public EmployeeLogin EmployeeLogin { get; set; }
+        public Employee EmployeeLogin { get; set; }
         public Error Error { get; set; }
         public ReturnCode ReturnCode { get; set; }
 

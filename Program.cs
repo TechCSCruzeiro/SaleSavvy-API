@@ -11,7 +11,10 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddSingleton<IAutenticationService, AutenticationService>();
+builder.Services.AddSingleton<IUserService, UserService>();
+
 builder.Services.AddSingleton<IAutenticationRepository, AutenticationRepository>();
+builder.Services.AddSingleton<IUserRepository, UserRepository>();
 
 builder.Services.AddCors(option =>
 {

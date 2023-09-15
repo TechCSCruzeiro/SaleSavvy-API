@@ -22,7 +22,6 @@ namespace SaleSavvy_API.Repositories
             _connectionString = configuration.GetConnectionString("MyConnectionString");
         }
 
-        ///
         public async Task<Login> GetLogin(InputLogin input)
         {
             using (IDbConnection dbConnection = new SqlConnection(_connectionString))
