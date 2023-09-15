@@ -3,12 +3,12 @@ using SaleSavvy_API.Interface;
 using SaleSavvy_API.Models;
 using SaleSavvy_API.Models.Login.Input;
 using SaleSavvy_API.Models.Register.Input;
-using SaleSavvy_API.Models.Register.Output;
 
 namespace SaleSavvy_API.Controllers
 {
-    [Route("api/autentication")]
+
     [ApiController]
+    [Route("api/[Controller]")]
     public class AutenticationController : ControllerBase
     {
         IAutenticationService _autenticationService;
@@ -22,21 +22,34 @@ namespace SaleSavvy_API.Controllers
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        [HttpPost("/login")]
-        public async Task<OutputGetLogin> InsertLogin([FromBody] InputLogin input)
-       {
-            return await _autenticationService.Validatelogin(input);
+        [HttpPost("login")]
+        public async Task<IActionResult> InsertLogin([FromBody] InputLogin input)
+        {
+            var output = await _autenticationService.Validatelogin(input);
+
+            if (output.ReturnCode != ReturnCode.exito)
+            {
+                return BadRequest(output.Error.MenssageError);
+            }
+            return Ok(output);
+
         }
 
         /// <summary>
-        /// Cadastrar
+        /// Cadastrar novo usuario
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        [HttpPost("/register")]
-        public async Task<OutputRegister> RegisterUser([FromBody] InputRegister input)
+        [HttpPost("register")]
+        public async Task<IActionResult> RegisterUser([FromBody] InputRegister input)
         {
-            return await _autenticationService.ValidateRegister(input);
+            var output = await _autenticationService.ValidateRegister(input);
+
+            if (output.ReturnCode != ReturnCode.exito)
+            {
+                return BadRequest(output.Error.MenssageError);
+            }
+            return Ok(output);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using SaleSavvy_API.Models.Login.Input;
+using SaleSavvy_API.Models.Login.Output;
 
 namespace SaleSavvy_API.Models.Login
 {

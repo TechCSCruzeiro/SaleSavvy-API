@@ -1,6 +1,4 @@
-﻿
-
-namespace SaleSavvy_API.Models.Login.Entity
+﻿namespace SaleSavvy_API.Models.Login.Entity
 {
     public class LoginEntity
     {

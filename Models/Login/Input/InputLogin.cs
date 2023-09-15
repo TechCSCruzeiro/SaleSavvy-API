@@ -1,4 +1,4 @@
-﻿namespace SaleSavvy_API.Models
+﻿namespace SaleSavvy_API.Models.Login.Input
 {
     public class InputLogin
     {
