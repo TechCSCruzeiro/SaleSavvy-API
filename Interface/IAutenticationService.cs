@@ -1,5 +1,5 @@
-﻿using SaleSavvy_API.Models;
-using SaleSavvy_API.Models.Login.Input;
+﻿using SaleSavvy_API.Models.Login.Input;
+using SaleSavvy_API.Models.Login.Output;
 using SaleSavvy_API.Models.Register.Input;
 using SaleSavvy_API.Models.Register.Output;
 

@@ -1,6 +1,4 @@
-﻿using static Dapper.SqlMapper;
-
-namespace SaleSavvy_API.Models.Login.Input
+﻿namespace SaleSavvy_API.Models.Login.Output
 {
     public class OutputGetLogin
     {
