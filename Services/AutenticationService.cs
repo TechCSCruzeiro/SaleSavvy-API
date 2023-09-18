@@ -28,7 +28,11 @@ namespace SaleSavvy_API.Services
             var output = new OutputGetLogin();
             var validateLogin = new ValidateLogin();
 
-            var errorInstance = validateLogin.ValidateInsertion(input);
+            var errorInstance = validateLogin.ValidateInsertion(
+                input.ID,
+                input.Email,
+                input.Password
+                );
 
             if (errorInstance.Error != null && errorInstance.Error.MenssageError.Length > 0)
             {
