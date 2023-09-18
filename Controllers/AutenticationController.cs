@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SaleSavvy_API.Interface;
 using SaleSavvy_API.Models;
 using SaleSavvy_API.Models.Login.Input;
 using SaleSavvy_API.Models.Register.Input;
+using SaleSavvy_API.Services;
 
 namespace SaleSavvy_API.Controllers
 {
@@ -27,11 +29,13 @@ namespace SaleSavvy_API.Controllers
         {
             var output = await _autenticationService.Validatelogin(input);
 
-            if (output.ReturnCode != ReturnCode.exito)
+            if (output.ReturnCode == ReturnCode.exito)
             {
-                return BadRequest(output.Error.MenssageError);
+                var token = TokenService.GenerateToken(output);
+                return Ok(token);
             }
-            return Ok(output);
+            return BadRequest(output.Error.MenssageError);
+
 
         }
 
