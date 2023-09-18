@@ -1,6 +1,12 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore;
+using Microsoft.IdentityModel.Tokens;
 using SaleSavvy_API.Interface;
 using SaleSavvy_API.Repositories;
 using SaleSavvy_API.Services;
+using System.Text;
+using SaleSavvy_API;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -44,5 +50,8 @@ app.UseEndpoints(endpoints =>
 {
     endpoints.MapControllers();
 });
+
+var key = Encoding.ASCII.GetBytes("@ut&tic@do"); 
+app.UseAuthorization();
 
 app.Run();
