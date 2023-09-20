@@ -33,14 +33,64 @@ namespace SaleSavvy_API.Repositories
             throw new NotImplementedException();
         }
 
-        public Task<OutputProduct> SaveProduct(InputProduct input)
+        public async Task<OutputProduct> SaveProduct(InputProduct input)
         {
+            var output = new OutputProduct();
+
             using (IDbConnection dbConnection = new SqlConnection(_connectionString))
             {
-                string sql = "SELECT * FROM [dbo].[User] WHERE Email = @Email";
-                var entity = dbConnection.QuerySingleOrDefault<LoginEntity>(sql, new { Email = input}); ;
+                string selectUser = "SELECT * FROM [USER] WHERE Id = @Id";
+                var userCount = await dbConnection.QueryAsync<LoginEntity>(selectUser, new { Id = input.UserId });
 
-                return null;
+                if (userCount.Count() > 0)
+                {
+                    try
+                    {
+                        var inserProduct = await dbConnection.QueryAsync<LoginEntity>(@"
+                             INSERT INTO [dbo].[Product]
+                             ([Id]
+                             ,[UserID]
+                             ,[Name]
+                             ,[Description]
+                             ,[Price]
+                             ,[Quantity]
+                             ,[CreationDate])
+                             SELECT
+                             NEWID(),
+                             @UserID,
+                             @Name,
+                             @Description,
+                             @Price,
+                             @Quantity,
+                             GETDATE()
+                             WHERE NOT EXISTS (
+                                 SELECT 1
+                                 FROM [dbo].[Product]
+                                 WHERE [Name] = @Name
+                             );",
+                             new
+                             {
+                                 UserId = input.UserId,
+                                 Id = input.Product.Id,
+                                 Name = input.Product.Name,
+                                 Description = input.Product.Description,
+                                 Price = input.Product.Price,
+                                 Quantity = input.Product.Quantity,
+                             });
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new ArgumentException(ex.Message);
+                    }
+
+                }
+
+                var listError = new List<string>();
+                listError.Add("Erro ao inserir o produto no banco");
+
+                output.AddError(listError.ToArray());
+
+                return output;
             }
         }
     }
