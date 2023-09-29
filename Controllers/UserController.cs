@@ -2,8 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SaleSavvy_API.Interface;
 using SaleSavvy_API.Models;
-using SaleSavvy_API.Models.Login;
-using SaleSavvy_API.Models.Login.Input;
+using SaleSavvy_API.Models.Register.Input;
 using SaleSavvy_API.Models.UpdateUser;
 
 namespace SaleSavvy_API.Controllers
@@ -18,6 +17,19 @@ namespace SaleSavvy_API.Controllers
         {
             _userService = autenticationService;
         }
+
+        [HttpPost("register")]
+        public async Task<IActionResult> RegisterUser(InputRegister input)
+        {
+            var output = await _userService.ValidateRegister(input);
+
+            if(output.ReturnCode == ReturnCode.exito)
+            {
+                return Ok(output);
+            }
+            return BadRequest(output);
+        }
+
 
         [HttpGet("listUser")]
         public async Task<IActionResult> GetUser()

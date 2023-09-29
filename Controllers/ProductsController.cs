@@ -11,7 +11,7 @@ namespace SaleSavvy_API.Controllers
     [Authorize]
     [ApiController]
     [Route("api/[Controller]")]
-    public class ProductsController : ControllerBase // Altere a classe base para ControllerBase
+    public class ProductsController : ControllerBase
     {
         private readonly IProductsService _productsService;
 
@@ -24,26 +24,34 @@ namespace SaleSavvy_API.Controllers
         public async Task<IActionResult> InsertProduct([FromBody] InputProduct input)
         {
 
-            var output = _productsService.CreateProduct(input);
-            try
-            {
+            var output = await _productsService.CreateProduct(input);
 
-                return Ok("Product inserted successfully");
-            }
-            catch (Exception ex)
+            if (output.ReturnCode == ReturnCode.exito)
             {
-                // Em caso de erro, retorna uma resposta HTTP com status 500 Internal Server Error
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return Ok(output.ReturnCode);
             }
+            return BadRequest(output.Error.MenssageError);
+
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetProduct()
+        public async Task<IActionResult> GetProduct(Guid userId)
         {
-            // Lógica para buscar produtos aqui
+            if (userId == Guid.Empty)
+            {
+                return BadRequest("Id do Usuario não pode ser vazio");
+            }
 
-            // Retorna uma resposta HTTP com os produtos encontrados
-            return Ok(/* Resultado da busca de produtos */);
+            try
+            {
+                var output = await _productsService.SearchProduct(userId);
+                return Ok(output);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
         }
 
         [HttpPut]

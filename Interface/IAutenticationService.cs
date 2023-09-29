@@ -8,6 +8,5 @@ namespace SaleSavvy_API.Interface
     public interface IAutenticationService
     {
         Task<OutputGetLogin> Validatelogin(InputLogin input);
-        Task<OutputRegister> ValidateRegister(InputRegister input);
     }
 }

@@ -64,37 +64,5 @@ namespace SaleSavvy_API.Services
 
             return output;
         }
-
-        public async Task<OutputRegister> ValidateRegister(InputRegister input)
-        {
-            var output = new OutputRegister(); 
-            var validate = new ValidateRegister();
-            var validateRegister = validate.ValidateInsertRegister(input);
-
-            if (validateRegister.Error != null && validateRegister.Error.MenssageError.Length > 0)
-            {
-                output.Error = validateRegister.Error;
-            }
-            else
-            {
-                var insertRegister = await _autenticationRepository.InsertRegister(input);
-
-                if (insertRegister.ReturnCode.Equals(ReturnCode.exito)) 
-                {
-                    output.ReturnCode = insertRegister.ReturnCode;
-
-                }
-                else
-                {
-                    var listError = new List<string>();
-
-                    listError.Add(insertRegister.ErrorMessage);
-
-                    output.AddError(insertRegister.ReturnCode, listError.ToArray());
-                }
-            }
-
-            return output;
-        }
     }
 }

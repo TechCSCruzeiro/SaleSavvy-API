@@ -3,7 +3,11 @@ using SaleSavvy_API.Models;
 using SaleSavvy_API.Models.GetUser;
 using SaleSavvy_API.Models.GetUser.Entity;
 using SaleSavvy_API.Models.Login;
+using SaleSavvy_API.Models.Register.Input;
+using SaleSavvy_API.Models.Register.Output;
+using SaleSavvy_API.Models.Register;
 using SaleSavvy_API.Models.UpdateUser;
+using SaleSavvy_API.Repositories;
 
 namespace SaleSavvy_API.Services
 {
@@ -44,6 +48,38 @@ namespace SaleSavvy_API.Services
             }
 
             return await _userRepository.UpdateEmployee(input);
+        }
+
+        public async Task<OutputRegister> ValidateRegister(InputRegister input)
+        {
+            var output = new OutputRegister();
+            var validate = new ValidateRegister();
+            var validateRegister = validate.ValidateInsertRegister(input);
+
+            if (validateRegister.Error != null && validateRegister.Error.MenssageError.Length > 0)
+            {
+                output.Error = validateRegister.Error;
+            }
+            else
+            {
+                var insertRegister = await _userRepository.InsertRegister(input);
+
+                if (insertRegister.ReturnCode.Equals(ReturnCode.exito))
+                {
+                    output.ReturnCode = insertRegister.ReturnCode;
+
+                }
+                else
+                {
+                    var listError = new List<string>();
+
+                    listError.Add(insertRegister.ErrorMessage);
+
+                    output.AddError(insertRegister.ReturnCode, listError.ToArray());
+                }
+            }
+
+            return output;
         }
     }
 }

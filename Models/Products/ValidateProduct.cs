@@ -1,4 +1,6 @@
-﻿namespace SaleSavvy_API.Models.Products
+﻿using Microsoft.IdentityModel.Tokens;
+
+namespace SaleSavvy_API.Models.Products
 {
     public class ValidateProduct
     {
@@ -27,12 +29,6 @@
                 output.AddError(listError.ToArray());
             }
 
-            if (product.Product.Id == null || product.Product.Id == Guid.Empty)
-            {
-                listError.Add("Id do Produto não pode ser vazio ou nulo");
-                output.AddError(listError.ToArray());
-            }
-
             if (string.IsNullOrEmpty(product.Product.Description))
             {
                 listError.Add("Descrição do produto não pode ser vazio ou nulo");
@@ -45,7 +41,7 @@
                 output.AddError(listError.ToArray());
             }
 
-            if (output.Error.MenssageError.Length > 0)
+            if (output.Error != null)
             {
                 return output;
             }

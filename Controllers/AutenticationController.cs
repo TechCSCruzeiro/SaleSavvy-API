@@ -38,22 +38,5 @@ namespace SaleSavvy_API.Controllers
 
 
         }
-
-        /// <summary>
-        /// Cadastrar novo usuario
-        /// </summary>
-        /// <param name="input"></param>
-        /// <returns></returns>
-        [HttpPost("register")]
-        public async Task<IActionResult> RegisterUser([FromBody] InputRegister input)
-        {
-            var output = await _autenticationService.ValidateRegister(input);
-
-            if (output.ReturnCode != ReturnCode.exito)
-            {
-                return BadRequest(output.Error.MenssageError);
-            }
-            return Ok(output);
-        }
     }
 }
