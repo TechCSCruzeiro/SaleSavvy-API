@@ -4,7 +4,7 @@
     {
         public Guid UserId { get; set; }
         public Product Product { get; set; }
-
+        public decimal? AlterValue { get; set; }
 
     }
 }

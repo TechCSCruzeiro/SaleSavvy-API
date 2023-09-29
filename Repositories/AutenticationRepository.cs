@@ -8,6 +8,7 @@ using System.Data;
 using Microsoft.Data.SqlClient;
 using SaleSavvy_API.Models.Register.Input;
 using SaleSavvy_API.Models.Register;
+using Npgsql;
 
 namespace SaleSavvy_API.Repositories
 {
@@ -15,81 +16,42 @@ namespace SaleSavvy_API.Repositories
     public class AutenticationRepository : IAutenticationRepository
     {
 
-        private readonly string _connectionString;
+        private IConfiguration _configuracoes;
 
-        public AutenticationRepository(IConfiguration configuration)
+        public AutenticationRepository(IConfiguration config)
         {
-            _connectionString = configuration.GetConnectionString("MyConnectionString");
+            _configuracoes = config;
         }
 
         public async Task<Login> GetLogin(InputLogin input)
         {
-            using (IDbConnection dbConnection = new SqlConnection(_connectionString))
+            using (NpgsqlConnection conexao = new NpgsqlConnection(
+                _configuracoes.GetConnectionString("PostgresConnection")))
             {
-                string sql = "SELECT * FROM [dbo].[User] WHERE Email = @Email";
-                var entity = dbConnection.QuerySingleOrDefault<LoginEntity>(sql, new { Email = input.Email.ToLower() }); ;
 
-                if (entity != null)
+                // Consulta SQL parametrizada
+                string consulta = "SELECT * FROM \"user_\" WHERE \"Email\" = @Email";
+
+                // Executar a consulta e passar o parâmetro
+                var resultados = await conexao.QueryAsync<LoginEntity>(consulta, new { Email = input.Email });
+
+                // Verifique se há resultados
+                if (resultados.Any())
                 {
-                    return new Login(entity);
+                    // Transforme o resultado em uma instância de LoginEntity
+                    var loginEntity = resultados.First();
+
+                    // Crie uma instância de Login e preencha-a com os valores do LoginEntity
+                    var login = new Login(loginEntity);
+
+                    return login;
                 }
                 else
                 {
-                    return new Login().AddError("Email Não Cadastrado");
+                    // Se não houver resultados, retorne null ou trate de outra forma
+                    return null;
                 }
-            };
-        }
-
-        public async Task<Register> InsertRegister(InputRegister input)
-        {
-            var output = new Register(ReturnCode.exito);
-            
-            using (IDbConnection dbConnection = new SqlConnection(_connectionString))
-            {
-                string message;
-
-                var consultUserMail = dbConnection.QuerySingleOrDefault("SELECT * FROM [dbo].[User] WHERE Email = @Email",
-                  new {Email = input.Email.ToLower()});
-
-                if (consultUserMail != null)
-                {
-                    message = "Email ja Cadastrado";
-                    return output = new Register(ReturnCode.failed, message);
-                }
-
-                var consultUserName = dbConnection.QuerySingleOrDefault("SELECT * FROM [dbo].[User] WHERE [Name] = @Name",
-                  new { Name = input.Name.ToLower() });
-
-                if (consultUserName != null)
-                {
-                    message = "Nome ja Cadastrado";
-                    return output = new Register(ReturnCode.failed, message);
-                }
-
-                try
-                {
-
-                    string insertRegister = "INSERT INTO [dbo].[User]([Id],[Email],[Password],[Name]) " +
-                        "VALUES(@Id, @Email, @Password, @Name);";
-
-                    var insert = await dbConnection.ExecuteAsync(insertRegister,
-                        new
-                        {
-                            Id = Guid.NewGuid(),
-                            Email = input.Email.ToLower(),
-                            Password = input.Password,
-                            Name = input.Name,
-                        });
-
-                    return output;
-
-                }
-                catch (SqlException ex)
-                {
-                    message = ("Error ao criar usuario no banco: " + ex.ErrorCode);
-                    return output = new Register(ReturnCode.failed, message);
-                }
-            };
+            }
         }
     }
 }

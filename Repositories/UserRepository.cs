@@ -11,48 +11,57 @@ using System.Diagnostics.Eventing.Reader;
 using SaleSavvy_API.Models;
 using System.Data.Common;
 using SaleSavvy_API.Models.UpdateUser;
+using Npgsql;
+using SaleSavvy_API.Models.Register.Input;
+using SaleSavvy_API.Models.Register;
 
 namespace SaleSavvy_API.Repositories
 {
     public class UserRepository : IUserRepository
     {
-        private readonly string _connectionString;
+        private IConfiguration _configuracoes;
 
-        public UserRepository(IConfiguration configuration)
+        public UserRepository(IConfiguration config)
         {
-            _connectionString = configuration.GetConnectionString("MyConnectionString");
+            _configuracoes = config;
         }
 
         public async Task<GetUserEntity[]> All()
         {
-            using (IDbConnection dbConnection = new SqlConnection(_connectionString))
+            using (NpgsqlConnection conexao = new NpgsqlConnection(
+                _configuracoes.GetConnectionString("PostgresConnection")))
             {
-                string sql = "SELECT * FROM [dbo].[User]";
-                var entity = await dbConnection.QueryAsync<GetUserEntity>(sql);
+                string sql = "SELECT * FROM \"user_\"";
+
+                var entity = await conexao.QueryAsync<GetUserEntity>(sql);
 
                 return entity.ToArray();
-            };
+            }
         }
+
+
+
 
 
         public async Task<OutputUpdateUser> DeleteEmployee(string id)
         {
-            using (IDbConnection dbConnection = new SqlConnection(_connectionString))
+            using (NpgsqlConnection dbConnection = new NpgsqlConnection(
+                _configuracoes.GetConnectionString("PostgresConnection")))
             {
+                dbConnection.Open();
                 try
                 {
+                    Guid userId = Guid.Parse(id); // Converte a string em um GUID
 
-                    string select = "SELECT * FROM [dbo].[User] Where Id = @Id";
-                    var resultSelect = await dbConnection.QueryAsync<LoginEntity>(select, new{  Id = id });
+                    string select = "SELECT * FROM \"user_\" WHERE \"Id\" = @Id";
+                    var resultSelect = await dbConnection.QueryAsync<LoginEntity>(select, new { Id = userId });
 
                     if (resultSelect.Count() != 0)
                     {
-                        string sql = "DELETE FROM [dbo].[User] WHERE Id = @Id";
-                        await dbConnection.QueryAsync(sql, new { Id = id });
-
+                        string sql = "DELETE FROM \"user_\" WHERE \"Id\" = @Id";
+                        await dbConnection.ExecuteAsync(sql, new { Id = userId });
 
                         return new OutputUpdateUser(ReturnCode.exito);
-
                     }
                     else
                     {
@@ -64,39 +73,37 @@ namespace SaleSavvy_API.Repositories
 
                         return output;
                     }
-
                 }
                 catch (Exception ex)
                 {
-                    throw new ArgumentException("Error Ao deletar do banco: \n" + ex);
+                    throw new ArgumentException("Erro Ao deletar do banco: \n" + ex);
                 }
-
-
-
-            };
+            }
         }
+
+
 
         public async Task<OutputUpdateUser> UpdateEmployee(InputUpdateUser input)
         {
-            using (IDbConnection dbConnection = new SqlConnection(_connectionString))
+            using (NpgsqlConnection conexao = new NpgsqlConnection(
+                _configuracoes.GetConnectionString("PostgresConnection")))
             {
                 try
                 {
-                    string select = "SELECT * FROM [dbo].[User] Where Id = @Id";
-                    var resultSelect = await dbConnection.QueryAsync<LoginEntity>(select,
-                    new
-                    {
-                        Id = input.Id,
-                        Email = input.Email,
-                        Password = input.Password,
-                        Name = input.Name
-                    });
-
+                    string select = "SELECT * FROM \"user_\" WHERE \"Id\" = @Id";
+                    var resultSelect = await conexao.QueryAsync<LoginEntity>(select,
+                        new
+                        {
+                            Id = input.Id,
+                            Email = input.Email,
+                            Password = input.Password,
+                            Name = input.Name
+                        });
 
                     if (resultSelect.Count() != 0)
                     {
-                        string sql = "UPDATE [dbo].[User] SET [Email] = @Email, [Password] = @Password, [Name] = @Name WHERE Id = @Id";
-                        await dbConnection.QueryAsync(sql,
+                        string sql = "UPDATE \"user_\" SET \"Email\" = @Email, \"Password\" = @Password, \"Name\" = @Name WHERE \"Id\" = @Id";
+                        await conexao.ExecuteAsync(sql,
                             new
                             {
                                 Id = input.Id,
@@ -107,7 +114,6 @@ namespace SaleSavvy_API.Repositories
 
                         return new OutputUpdateUser(ReturnCode.exito);
                     }
-
                     else
                     {
                         var output = new OutputUpdateUser();
@@ -118,11 +124,62 @@ namespace SaleSavvy_API.Repositories
 
                         return output;
                     }
-
                 }
-                catch (Exception ex)
+                catch (NpgsqlException ex)
                 {
-                    throw new ArgumentException("Error Ao deletar do banco: \n" + ex);
+                    throw new ArgumentException("Erro ao atualizar no banco: \n" + ex);
+                }
+            }
+        }
+
+
+        public async Task<Register> InsertRegister(InputRegister input)
+        {
+            var output = new Register(ReturnCode.exito);
+
+            using (NpgsqlConnection conexao = new NpgsqlConnection(
+                _configuracoes.GetConnectionString("PostgresConnection")))
+            {
+                string message;
+
+                var consultUserMail = await conexao.QuerySingleOrDefaultAsync("SELECT * FROM \"user_\" WHERE \"Email\" = @Email",
+                    new { Email = input.Email.ToLower() });
+
+                if (consultUserMail != null)
+                {
+                    message = "Email já cadastrado";
+                    return output = new Register(ReturnCode.failed, message);
+                }
+
+                var consultUserName = await conexao.QuerySingleOrDefaultAsync("SELECT * FROM \"user_\" WHERE \"Name\" = @Name",
+                    new { Name = input.Name.ToLower() });
+
+                if (consultUserName != null)
+                {
+                    message = "Nome já cadastrado";
+                    return output = new Register(ReturnCode.failed, message);
+                }
+
+                try
+                {
+                    string insertRegister = "INSERT INTO \"user_\"(\"Id\",\"Email\",\"Password\",\"Name\") " +
+                        "VALUES(@Id, @Email, @Password, @Name);";
+
+                    var insert = await conexao.ExecuteAsync(insertRegister,
+                        new
+                        {
+                            Id = Guid.NewGuid(),
+                            Email = input.Email.ToLower(),
+                            Password = input.Password,
+                            Name = input.Name,
+                        });
+
+                    return output;
+                }
+                catch (NpgsqlException ex)
+                {
+                    message = ("Erro ao criar usuário no banco: " + ex.ErrorCode);
+                    return output = new Register(ReturnCode.failed, message);
                 }
             }
         }

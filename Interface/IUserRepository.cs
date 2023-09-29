@@ -2,6 +2,8 @@
 using SaleSavvy_API.Models.GetUser;
 using SaleSavvy_API.Models.GetUser.Entity;
 using SaleSavvy_API.Models.Login;
+using SaleSavvy_API.Models.Register.Input;
+using SaleSavvy_API.Models.Register;
 using SaleSavvy_API.Models.UpdateUser;
 
 namespace SaleSavvy_API.Interface
@@ -10,6 +12,7 @@ namespace SaleSavvy_API.Interface
     {
         Task<GetUserEntity[]> All();
         Task<OutputUpdateUser> DeleteEmployee(string id);
-       public Task<OutputUpdateUser> UpdateEmployee(InputUpdateUser input);
+        Task<OutputUpdateUser> UpdateEmployee(InputUpdateUser input);
+        Task<Register> InsertRegister(InputRegister input);
     }
 }

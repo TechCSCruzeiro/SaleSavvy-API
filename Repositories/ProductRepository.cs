@@ -6,16 +6,20 @@ using SaleSavvy_API.Models.Login;
 using System.Data;
 using Dapper;
 using SaleSavvy_API.Models.Products;
+using SaleSavvy_API.Models;
+using Npgsql;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace SaleSavvy_API.Repositories
 {
     public class ProductRepository : IProductRepository
     {
-        private readonly string _connectionString;
 
-        public ProductRepository(IConfiguration configuration)
+        private IConfiguration _configuracoes;
+
+        public ProductRepository(IConfiguration config)
         {
-            _connectionString = configuration.GetConnectionString("MyConnectionString");
+            _configuracoes = config;
         }
 
         public Task<OutputProduct> DiscardProduct()
@@ -27,68 +31,100 @@ namespace SaleSavvy_API.Repositories
         {
             throw new NotImplementedException();
         }
-
-        public Task<OutputProduct> FindProduct()
+        public async Task<Product[]> FindProduct(Guid id)
         {
-            throw new NotImplementedException();
+            using (NpgsqlConnection conexao = new NpgsqlConnection(
+                _configuracoes.GetConnectionString("PostgresConnection")))
+            {
+                var products = await conexao.QueryAsync<Product>(
+                    @"SELECT ""product"".* FROM ""product""
+                        INNER JOIN ""user_"" ON ""product"".""UserID"" = ""user_"".""Id"" 
+                        WHERE ""user_"".""Id"" = @UserId",
+                    new
+                    {
+                        UserId = id
+                    });
+
+                if (products.Count() > 0)
+                {
+                    return products.ToArray();
+                }
+                throw new ArgumentException("NÃO EXISTE PRODUTOS PARA ESSE USUÁRIO");
+            }
         }
 
         public async Task<OutputProduct> SaveProduct(InputProduct input)
         {
             var output = new OutputProduct();
 
-            using (IDbConnection dbConnection = new SqlConnection(_connectionString))
+            using (NpgsqlConnection connection = new NpgsqlConnection(
+                _configuracoes.GetConnectionString("PostgresConnection")))
             {
-                string selectUser = "SELECT * FROM [USER] WHERE Id = @Id";
-                var userCount = await dbConnection.QueryAsync<LoginEntity>(selectUser, new { Id = input.UserId });
+                connection.Open();
 
-                if (userCount.Count() > 0)
+                string selectUser = "SELECT * FROM \"user_\" WHERE \"Id\" = @Id";
+                var userCount = await connection.QueryAsync<LoginEntity>(selectUser, new { Id = input.UserId });
+
+                if (userCount.Count() == 0)
                 {
-                    try
-                    {
-                        var inserProduct = await dbConnection.QueryAsync<LoginEntity>(@"
-                             INSERT INTO [dbo].[Product]
-                             ([Id]
-                             ,[UserID]
-                             ,[Name]
-                             ,[Description]
-                             ,[Price]
-                             ,[Quantity]
-                             ,[CreationDate])
-                             SELECT
-                             NEWID(),
-                             @UserID,
-                             @Name,
-                             @Description,
-                             @Price,
-                             @Quantity,
-                             GETDATE()
-                             WHERE NOT EXISTS (
-                                 SELECT 1
-                                 FROM [dbo].[Product]
-                                 WHERE [Name] = @Name
-                             );",
-                             new
-                             {
-                                 UserId = input.UserId,
-                                 Id = input.Product.Id,
-                                 Name = input.Product.Name,
-                                 Description = input.Product.Description,
-                                 Price = input.Product.Price,
-                                 Quantity = input.Product.Quantity,
-                             });
-                    }
-                    catch (Exception ex)
-                    {
-                        throw new ArgumentException(ex.Message);
-                    }
-
+                    var listError = new List<string>();
+                    listError.Add("Usuário não encontrado");
+                    output.AddError(listError.ToArray());
+                    return output;
                 }
 
-                var listError = new List<string>();
-                listError.Add("Erro ao inserir o produto no banco");
+                try
+                {
+                    var insertProduct = await connection.ExecuteAsync(@"
+                        INSERT INTO ""product""
+                            (""Id"",
+                            ""UserID"",
+                            ""Name"",
+                            ""Description"",
+                            ""Price"",
+                            ""Quantity"",
+                            ""CreationDate"")
+                        SELECT
+                            @Id,
+                            @UserID,
+                            @Name,
+                            @Description,
+                            @Price,
+                            @Quantity,
+                            NOW()
+                        WHERE NOT EXISTS (
+                            SELECT 1
+                            FROM ""product""
+                            WHERE ""Name"" = @Name
+                        );",
+                        new
+                        {
+                            Id = input.Product.Id,
+                            UserId = input.UserId,
+                            Name = input.Product.Name,
+                            Description = input.Product.Description,
+                            Price = input.Product.Price,
+                            Quantity = input.Product.Quantity,
+                        });
 
-                output.AddError(listError.ToArray());
+                    if (insertProduct.Equals(0))
+                    {
+                        var listError = new List<string>();
+                        listError.Add("Produto já existe");
+                        output.AddError(listError.ToArray());
+                    }
+                    else
+                    {
+                        output.ReturnCode = Models.ReturnCode.exito;
+                        return output;
+                    }
+                }
+                catch (NpgsqlException ex)
+                {
+                    var listError = new List<string>();
+                    listError.Add($"Erro PostgreSQL: {ex.Message}");
+                    output.AddError(listError.ToArray());
+                }
 
                 return output;
             }
