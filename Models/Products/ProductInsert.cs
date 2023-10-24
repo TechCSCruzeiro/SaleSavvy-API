@@ -1,11 +1,7 @@
-﻿using Newtonsoft.Json;
-using System.Globalization;
-
-namespace SaleSavvy_API.Models
+﻿namespace SaleSavvy_API.Models.Products
 {
-    public class Product
+    public class ProductInsert
     {
-        public Guid Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
         public decimal Price { get; set; }

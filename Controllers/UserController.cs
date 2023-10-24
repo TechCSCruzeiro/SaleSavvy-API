@@ -69,5 +69,17 @@ namespace SaleSavvy_API.Controllers
             return BadRequest(output.Error.MenssageError);
         }
 
+        [HttpGet("findUserById/{userId}")]
+        public async Task<IActionResult> GetUser([System.Web.Http.FromUri] Guid userId)
+        {
+            var output = await _userService.SearchUserById(userId);
+
+            if (output != null)
+            {
+                return Ok(output);
+            }
+            return BadRequest("Não foi encontrado nenhum usuario");
+        }
+
     }
 }

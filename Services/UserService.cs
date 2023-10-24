@@ -81,5 +81,10 @@ namespace SaleSavvy_API.Services
 
             return output;
         }
+
+        public async Task<GetUserEntity> SearchUserById(Guid userId)
+        {
+            return await _userRepository.GetUserById(userId);
+        }
     }
 }

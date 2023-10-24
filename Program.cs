@@ -48,11 +48,18 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddSingleton<IAutenticationService, AutenticationService>();
 builder.Services.AddSingleton<IUserService, UserService>();
 builder.Services.AddSingleton<IProductsService, ProductsService>();
+builder.Services.AddSingleton<IClientService, ClientService>();
+builder.Services.AddSingleton<IMovementRecordsService, MovementRecordsService>();
 
 builder.Services.AddSingleton<IAutenticationRepository, AutenticationRepository>();
 builder.Services.AddSingleton<IUserRepository, UserRepository>();
 builder.Services.AddSingleton<IProductRepository, ProductRepository>();
+builder.Services.AddSingleton<IClientRepository, ClientRepository>();
 builder.Services.AddSingleton<IMovementRecordsRepository, MovementRecordsRepository>();
+
+builder.Services.AddSingleton<IRecord, Record>();
+
+
 
 builder.Services.AddCors(option =>
 {

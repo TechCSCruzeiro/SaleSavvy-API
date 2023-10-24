@@ -14,5 +14,6 @@ namespace SaleSavvy_API.Interface
         Task<OutputUpdateUser> DeleteUser(string id);
         Task<OutputUpdateUser> ModifyUserData(InputUpdateUser input);
         Task<OutputRegister> ValidateRegister(InputRegister input);
+        Task<GetUserEntity> SearchUserById(Guid userId);
     }
 }

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using SaleSavvy_API.Interface;
 using SaleSavvy_API.Models;
 using SaleSavvy_API.Models.Products;
+using SaleSavvy_API.Services;
 using System;
 using System.Threading.Tasks;
 
@@ -21,7 +22,7 @@ namespace SaleSavvy_API.Controllers
         }
 
         [HttpPost("InsertProduct")]
-        public async Task<IActionResult> InsertProduct([FromBody] InputProduct input)
+        public async Task<IActionResult> InsertProduct([FromBody] InputSaveProduct input)
         {
 
             var output = await _productsService.CreateProduct(input);
@@ -34,14 +35,9 @@ namespace SaleSavvy_API.Controllers
 
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetProduct(Guid userId)
+        [HttpGet("ListProduct")]
+        public async Task<IActionResult> GetProduct([System.Web.Http.FromUri] Guid userId)
         {
-            if (userId == Guid.Empty)
-            {
-                return BadRequest("Id do Usuario não pode ser vazio");
-            }
-
             try
             {
                 var output = await _productsService.SearchProduct(userId);
@@ -54,22 +50,42 @@ namespace SaleSavvy_API.Controllers
 
         }
 
-        [HttpPut]
-        public async Task<IActionResult> ModificProduct()
+        [HttpPut("ModificProduct")]
+        public async Task<IActionResult> ModificProduct(InputProduct product)
         {
-            // Lógica para atualizar produtos aqui
+            var output = await _productsService.UpdateProduct(product);
 
-            // Retorna uma resposta HTTP de sucesso com status 200 OK
-            return Ok("Product updated successfully");
+            if (output.ReturnCode == ReturnCode.exito)
+            {
+                return Ok(output);
+            }
+            return NotFound(output.Error.MenssageError);
         }
 
-        [HttpDelete]
-        public async Task<IActionResult> DeleteProduct()
+        [HttpDelete("DesactiveProduct")]
+        public async Task<IActionResult> DeleteProduct([System.Web.Http.FromUri] Guid productId)
         {
-            // Lógica para excluir produtos aqui
+            var output = await _productsService.RemoveProduct(productId);
 
-            // Retorna uma resposta HTTP de sucesso com status 200 OK
-            return Ok("Product deleted successfully");
+            if (output.ReturnCode == ReturnCode.exito)
+            {
+                return Ok(output);
+            }
+            return NotFound(output.Error.MenssageError);
         }
+
+        [HttpGet("Find/ProductById")]
+        public async Task<IActionResult> GetProductById([System.Web.Http.FromUri] Guid productId)
+        {
+            var output = await _productsService.SearchProductById(productId);
+            
+            if(output != null)
+            {
+                return Ok(output);
+            }
+            return NotFound("Produto não encontrado");
+        }
+
+
     }
 }

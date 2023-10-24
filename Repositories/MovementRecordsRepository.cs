@@ -4,6 +4,7 @@ using Npgsql;
 using SaleSavvy_API.Interface;
 using SaleSavvy_API.Models;
 using SaleSavvy_API.Models.Login.Entity;
+using SaleSavvy_API.Models.MovementRecords;
 using SaleSavvy_API.Models.Products;
 using System.Data;
 
@@ -11,18 +12,19 @@ namespace SaleSavvy_API.Repositories
 {
     public class MovementRecordsRepository : IMovementRecordsRepository
     {
-        private readonly string _connectionString;
+        private IConfiguration _configuracoes;
 
-        public MovementRecordsRepository(IConfiguration configuration)
+        public MovementRecordsRepository(IConfiguration config)
         {
-            _connectionString = configuration.GetConnectionString("PostgresConnection");
+            _configuracoes = config;
         }
 
         public async Task<OutputProduct> SaveRecord(StatusMovementRecords status, InputProduct product)
         {
             var output = new OutputProduct();
 
-            using (NpgsqlConnection dbConnection = new NpgsqlConnection(_connectionString))
+            using (NpgsqlConnection dbConnection = new NpgsqlConnection(
+             _configuracoes.GetConnectionString("PostgresConnection")))
             {
                 dbConnection.Open();
                 try
@@ -35,7 +37,8 @@ namespace SaleSavvy_API.Repositories
                 ""DateMovement"",
                 ""CurrentQuantity"",
                 ""MovementQuantity"",
-                ""ChangedValue"")
+                ""NewValue"",
+                ""OldValue"")
                 SELECT
                 uuid_generate_v4(),
                 @ProductId,
@@ -43,12 +46,13 @@ namespace SaleSavvy_API.Repositories
                 NOW(),
                 (SELECT ""Quantity"" FROM ""product"" WHERE ""Id"" = @ProductId),
                 @MovementQuantity,
-                @ChangedValue ";
+                @NewValue,
+                @OldValue ";
 
                     if (status != StatusMovementRecords.Entrada)
                     {
                         sqlQueryInsert += @"WHERE ((SELECT ""Quantity"" 
-                                            FROM ""movement_records"" 
+                                            FROM ""product"" 
                                             WHERE ""Id"" = @ProductId) >= @MovementQuantity);"; ;
                     }
 
@@ -58,7 +62,8 @@ namespace SaleSavvy_API.Repositories
                             ProductId = product.Product.Id,
                             Status = status.ToString(),
                             MovementQuantity = product.Product.Quantity,
-                            ChangedValue = product.AlterValue != null ? product.AlterValue : null,
+                            OldValue = product.OldPrice != null ? product.OldPrice : 0m,
+                            NewValue = status == StatusMovementRecords.AlteracaoValor ? product.Product.Price : 0m,
                         });
 
                     if (inserProduct == 0)
@@ -81,6 +86,59 @@ namespace SaleSavvy_API.Repositories
                 }
 
                 return output;
+            }
+        }
+
+        public async Task<List<OutputRecordStock>> GetStockReportInfo(InputRecordStock input)
+        {
+            var result = new OutputRecordStock();
+            var output = new List<OutputRecordStock>();
+
+            using (NpgsqlConnection dbConnection = new NpgsqlConnection(
+             _configuracoes.GetConnectionString("PostgresConnection")))
+            {
+                dbConnection.Open();
+
+                string sqlQueryInsert = @"
+                    SELECT
+                        product.""Name"",
+                        movement_records.""Status"",
+                        movement_records.""DateMovement"",
+                        movement_records.""CurrentQuantity"",
+                        movement_records.""MovementQuantity"",
+                        movement_records.""NewValue"",
+                        movement_records.""OldValue""
+                    FROM
+                        movement_records
+                    LEFT JOIN
+                        product
+                    ON product.""Id"" = movement_records.""ProductId""            
+                    WHERE
+                        movement_records.""DateMovement"" >= @StartDate AND movement_records.""DateMovement"" <= @EndDate;
+                    ";
+
+                var recordInfo = await dbConnection.QueryAsync<RecordEntity>(sqlQueryInsert,
+                    new
+                    {
+                        StartDate = input.StartDate,
+                        EndDate = input.EndDate
+                    });
+
+                if (recordInfo.Count() == 0)
+                {
+                    throw new ArgumentException("Erro ao encontrar dados de estoque");
+                }
+                else
+                {
+                    foreach (var record in recordInfo)
+                    {
+                        var stockInfo = new OutputRecordStock(record);
+                        output.Add(stockInfo);
+                    }
+
+                    return output;
+                }
+
             }
         }
 

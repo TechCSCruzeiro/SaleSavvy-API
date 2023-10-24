@@ -9,6 +9,8 @@ using SaleSavvy_API.Models.Products;
 using SaleSavvy_API.Models;
 using Npgsql;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
+using SaleSavvy_API.Models.UpdateUser;
+using System.Collections.Generic;
 
 namespace SaleSavvy_API.Repositories
 {
@@ -22,16 +24,78 @@ namespace SaleSavvy_API.Repositories
             _configuracoes = config;
         }
 
-        public Task<OutputProduct> DiscardProduct()
+        public async Task<OutputProduct> DiscardProduct(Guid productId)
         {
-            throw new NotImplementedException();
+            var output = new OutputProduct();
+
+            using (NpgsqlConnection dbConnection = new NpgsqlConnection(
+             _configuracoes.GetConnectionString("PostgresConnection")))
+            {
+                dbConnection.Open();
+                try
+                {
+                    string sql = @"UPDATE ""product"" 
+                                  SET ""IsActive"" = false
+                                  WHERE ""Id"" = @Id";
+
+                    await dbConnection.ExecuteAsync(sql, new { Id = productId });
+
+                    output.ReturnCode = ReturnCode.exito;
+                }
+                catch (Exception ex)
+                {
+                    var listError = new List<string>();
+                    listError.Add("Erro ao deletar produto: " + $"{ex}");
+                    output.AddError(listError.ToArray());
+                }
+
+                return output;
+            }
         }
 
-        public Task<OutputProduct> EditProduct()
+        public async Task<OutputProduct> EditProduct(Product product)
         {
-            throw new NotImplementedException();
+            var output = new OutputProduct();
+
+            using (NpgsqlConnection dbConnection = new NpgsqlConnection(
+             _configuracoes.GetConnectionString("PostgresConnection")))
+            {
+                dbConnection.Open();
+
+                try
+                {
+
+                    string sql = @"UPDATE product
+	                        SET ""Name"" = @Name,
+                                ""Description"" = @Description, 
+                                ""Price"" = @Price, 
+                                ""Quantity"" = @Quantity, 
+                                ""IsActive"" = @IsActive
+	                        WHERE ""Id"" = @Id;";
+
+                    await dbConnection.ExecuteAsync(sql,
+                        new { Id = product.Id,
+                              Name = product.Name,
+                              Description = product.Description,
+                              Price = product.Price,
+                              Quantity = product.Quantity,
+                              IsActive = product.IsActive
+                        });
+
+                    output.ReturnCode = ReturnCode.exito;
+                }
+                catch (SqlException ex)
+                {
+                    var listError = new List<string>();
+                    listError.Add("Erro ao deletar produto: " + $"{ex}");
+                    output.AddError(listError.ToArray());
+                }
+
+                return output;
+            }
         }
-        public async Task<Product[]> FindProduct(Guid id)
+
+        public async Task<ProductDto[]> FindProduct(Guid id)
         {
             using (NpgsqlConnection conexao = new NpgsqlConnection(
                 _configuracoes.GetConnectionString("PostgresConnection")))
@@ -39,7 +103,8 @@ namespace SaleSavvy_API.Repositories
                 var products = await conexao.QueryAsync<Product>(
                     @"SELECT ""product"".* FROM ""product""
                         INNER JOIN ""user_"" ON ""product"".""UserID"" = ""user_"".""Id"" 
-                        WHERE ""user_"".""Id"" = @UserId",
+                        WHERE ""user_"".""Id"" = @UserId
+                        AND ""product"".""IsActive"" = true;",
                     new
                     {
                         UserId = id
@@ -47,13 +112,42 @@ namespace SaleSavvy_API.Repositories
 
                 if (products.Count() > 0)
                 {
-                    return products.ToArray();
+                    var output = new List<ProductDto>();
+                    foreach (var product in products)
+                    {
+                        var prod = new ProductDto(product);
+                        output.Add(prod);
+                    }
+
+                    return output.ToArray();
                 }
                 throw new ArgumentException("NÃO EXISTE PRODUTOS PARA ESSE USUÁRIO");
             }
         }
 
-        public async Task<OutputProduct> SaveProduct(InputProduct input)
+        public async Task<ProductDto> FindProductById(Guid productId)
+        {
+            using (NpgsqlConnection conexao = new NpgsqlConnection(
+               _configuracoes.GetConnectionString("PostgresConnection")))
+            {
+
+                var id = Guid.Parse(productId.ToString());
+                string selectUser = "SELECT * FROM \"product\" WHERE \"Id\" = @Id";
+                var selectProduct = await conexao.QueryAsync<Product>(selectUser, new { Id = productId });
+
+
+                if (selectProduct.Count() > 0)
+                {
+                    var output = new ProductDto(selectProduct.FirstOrDefault());
+
+                    return output;
+                }
+
+                return null;
+            }
+        }
+
+        public async Task<OutputProduct> SaveProduct(InputSaveProduct input, Guid id)
         {
             var output = new OutputProduct();
 
@@ -99,12 +193,12 @@ namespace SaleSavvy_API.Repositories
                         );",
                         new
                         {
-                            Id = input.Product.Id,
+                            Id = id,
                             UserId = input.UserId,
-                            Name = input.Product.Name,
-                            Description = input.Product.Description,
-                            Price = input.Product.Price,
-                            Quantity = input.Product.Quantity,
+                            Name = input.Name,
+                            Description = input.Description,
+                            Price = input.Price,
+                            Quantity = input.Quantity,
                         });
 
                     if (insertProduct.Equals(0))

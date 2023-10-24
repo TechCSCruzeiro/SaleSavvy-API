@@ -6,9 +6,10 @@ namespace SaleSavvy_API.Interface
 {
     public interface IProductsService
     {
-        public Task<OutputProduct> CreateProduct(InputProduct input);
-        public Task<Product[]> SearchProduct(Guid userId);
-        public Task<OutputProduct> ModifyProduct();
-        public Task<OutputProduct> RemoveProduct();
+        public Task<OutputProduct> CreateProduct(InputSaveProduct input);
+        public Task<ProductDto[]> SearchProduct(Guid userId);
+        public Task<ProductDto> SearchProductById(Guid productId);
+        public Task<OutputProduct> UpdateProduct(InputProduct product);
+        public Task<OutputProduct> RemoveProduct(Guid productId);
     }
 }

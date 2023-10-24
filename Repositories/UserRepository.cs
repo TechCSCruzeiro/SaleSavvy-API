@@ -39,10 +39,6 @@ namespace SaleSavvy_API.Repositories
             }
         }
 
-
-
-
-
         public async Task<OutputUpdateUser> DeleteEmployee(string id)
         {
             using (NpgsqlConnection dbConnection = new NpgsqlConnection(
@@ -80,8 +76,6 @@ namespace SaleSavvy_API.Repositories
                 }
             }
         }
-
-
 
         public async Task<OutputUpdateUser> UpdateEmployee(InputUpdateUser input)
         {
@@ -132,7 +126,6 @@ namespace SaleSavvy_API.Repositories
             }
         }
 
-
         public async Task<Register> InsertRegister(InputRegister input)
         {
             var output = new Register(ReturnCode.exito);
@@ -181,6 +174,25 @@ namespace SaleSavvy_API.Repositories
                     message = ("Erro ao criar usuário no banco: " + ex.ErrorCode);
                     return output = new Register(ReturnCode.failed, message);
                 }
+            }
+        }
+
+        public async Task<GetUserEntity> GetUserById(Guid userId)
+        {
+            using (NpgsqlConnection conexao = new NpgsqlConnection(
+             _configuracoes.GetConnectionString("PostgresConnection")))
+            {
+                string sql = "SELECT * FROM \"user_\"WHERE \"Id\" = @Id";
+
+                var entity = await conexao.QueryAsync<GetUserEntity>(sql, new {Id = userId});
+
+                if(entity != null)
+                {
+                    return entity.FirstOrDefault();
+                }
+
+                return null;
+
             }
         }
     }
