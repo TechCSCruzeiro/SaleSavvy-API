@@ -52,6 +52,11 @@ namespace SaleSavvy_API.Services
             }
             else
             {
+                if(product.Product.IsActive == null)
+                {
+                    product.Product.IsActive = true;
+                }
+
                 output = await _productRepository.EditProduct(product.Product);
                 
                 if(output.ReturnCode == ReturnCode.exito)
