@@ -22,6 +22,7 @@ namespace SaleSavvy_API.Services
                 Subject = new System.Security.Claims.ClaimsIdentity(new Claim[]
                 {
                     new Claim("employeeId", login.Id.ToString()),
+                    new Claim("name", login.EmployeeLogin.Name),
                 }),
                 //Tempo de expiração
                 Expires = DateTime.UtcNow.AddHours(4),
