@@ -11,6 +11,6 @@ namespace SaleSavvy_API.Models
         public decimal Price { get; set; }
         public int Quantity { get; set; }
         public DateTime? CreationDate { get; set; }
-        public bool IsActive { get; set; }
+        public bool? IsActive { get; set; }
     }
 }
