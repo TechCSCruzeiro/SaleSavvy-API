@@ -15,7 +15,12 @@ namespace SaleSavvy_API
             _configuration = configuration;
         }
 
-        public async Task<Guid> GenerateExcelFile(List<OutputRecordStock> data)
+        public Task<Guid> GenerateExcelFile(List<OutputRecordStock> data)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<Guid> GenerateMovementRecordFile(List<OutputRecordStock> data)
         {
             var fileId = Guid.NewGuid();
             var destinationPath = _configuration["ExcelSettings:DestinationPath"];

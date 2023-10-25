@@ -8,5 +8,6 @@ namespace SaleSavvy_API.Interface
     {
         Task<OutputProduct> SaveRecord(StatusMovementRecords status, InputProduct product);
         Task<List<OutputRecordStock>> GetStockReportInfo(InputRecordStock input);
+        Task<List<OutputRecordStock>> GetStockMovementReportInfo(InputRecordStock input);
     }
 }

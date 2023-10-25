@@ -89,6 +89,62 @@ namespace SaleSavvy_API.Repositories
             }
         }
 
+        public async Task<List<OutputRecordStock>> GetStockMovementReportInfo(InputRecordStock input)
+        {
+            var result = new OutputRecordStock();
+            var output = new List<OutputRecordStock>();
+
+            using (NpgsqlConnection dbConnection = new NpgsqlConnection(
+             _configuracoes.GetConnectionString("PostgresConnection")))
+            {
+                dbConnection.Open();
+
+                string sqlQueryInsert = @"
+                    SELECT
+                        product.""Name"",
+                        movement_records.""Status"",
+                        movement_records.""DateMovement"",
+                        movement_records.""CurrentQuantity"",
+                        movement_records.""MovementQuantity"",
+                        movement_records.""NewValue"",
+                        movement_records.""OldValue""
+                    FROM
+                        movement_records
+                    LEFT JOIN
+                        product
+                    ON product.""Id"" = movement_records.""ProductId""            
+                    WHERE
+                        movement_records.""DateMovement"" >= @StartDate 
+                        AND movement_records.""DateMovement"" <= @EndDate
+                        AND product.""UserID"" = @UserID;
+                    ";
+
+                var recordInfo = await dbConnection.QueryAsync<RecordEntity>(sqlQueryInsert,
+                    new
+                    {
+                        StartDate = input.StartDate,
+                        EndDate = input.EndDate,
+                        UserID = input.UserId
+                    });
+
+                if (recordInfo.Count() == 0)
+                {
+                    throw new ArgumentException("Erro ao encontrar dados de estoque");
+                }
+                else
+                {
+                    foreach (var record in recordInfo)
+                    {
+                        var stockInfo = new OutputRecordStock(record);
+                        output.Add(stockInfo);
+                    }
+
+                    return output;
+                }
+
+            }
+        }
+
         public async Task<List<OutputRecordStock>> GetStockReportInfo(InputRecordStock input)
         {
             var result = new OutputRecordStock();
@@ -141,6 +197,5 @@ namespace SaleSavvy_API.Repositories
 
             }
         }
-
     }
 }

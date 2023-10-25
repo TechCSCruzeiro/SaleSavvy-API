@@ -4,6 +4,7 @@ namespace SaleSavvy_API.Interface
 {
     public interface IMovementRecordsService
     {
+        public Task<Guid> CreateMovementRecordStock(InputRecordStock input);
         public Task<Guid> CreateRecordStock(InputRecordStock input);
         public Task<string> SearchRecord(Guid fileId);
     }

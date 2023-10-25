@@ -17,7 +17,20 @@ namespace SaleSavvy_API.Controllers
         }
 
         [HttpPost("record/movement/stock")]
-        public async Task<IActionResult> GenerateRecordStock(InputRecordStock input) 
+        public async Task<IActionResult> GenerateRecordMovementStock(InputRecordStock input) 
+        {
+            var output = await _movementRecordsService.CreateMovementRecordStock(input);
+
+            if (output != null)
+            {
+                return Ok(output);
+            }
+
+            return BadRequest();
+        }
+
+        [HttpPost("record/stock")]
+        public async Task<IActionResult> GenareteRecordStock(InputRecordStock input)
         {
             var output = await _movementRecordsService.CreateRecordStock(input);
 
