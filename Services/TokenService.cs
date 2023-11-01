@@ -23,6 +23,7 @@ namespace SaleSavvy_API.Services
                 {
                     new Claim("employeeId", login.Id.ToString()),
                     new Claim("name", login.EmployeeLogin.Name),
+                    new Claim("isAdm", login.EmployeeLogin.IsAdm.ToString())
                 }),
                 //Tempo de expiração
                 Expires = DateTime.UtcNow.AddHours(4),

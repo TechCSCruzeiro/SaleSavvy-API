@@ -12,7 +12,7 @@
             var input = login.EmployeeLogin;
 
             this.Id = login.Id;
-            this.EmployeeLogin = new Employee(input.Email, new string('*', input.Password.Length), input.Name);
+            this.EmployeeLogin = new Employee(input.Email, new string('*', input.Password.Length), input.Name, login.EmployeeLogin.IsAdm);
             this.ReturnCode = login.ReturnCode;
 
         }

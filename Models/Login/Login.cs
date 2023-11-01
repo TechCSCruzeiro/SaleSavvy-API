@@ -11,7 +11,7 @@ namespace SaleSavvy_API.Models.Login
         public Login(LoginEntity output)
         {
             Id = output.Id;
-            EmployeeLogin = new Employee(output.Email, output.Password, output.Name);
+            EmployeeLogin = new Employee(output.Email, output.Password, output.Name, output.IsAdm);
             this.ReturnCode = ReturnCode.exito;
         }
 

@@ -21,7 +21,7 @@ namespace SaleSavvy_API.Services
         /// Validação de Login
         /// </summary>
         /// <param name="input"></param>
-        /// <returns></returns>n
+        /// <returns></returns>
         public async Task<OutputGetLogin> Validatelogin(InputLogin input)
         {
             var validate = new Validate();
@@ -37,17 +37,20 @@ namespace SaleSavvy_API.Services
             if (errorInstance.Error != null && errorInstance.Error.MenssageError.Length > 0)
             {
                 output = errorInstance;
-            } 
-            else 
+            }
+            else
             {
                 //Consultar email na base
                 var getLogin = await _autenticationRepository.GetLogin(input);
 
                 //Validar returnCode da consulta 
-                if (getLogin.ReturnCode.Equals(ReturnCode.failed))
+                if (getLogin == null)
                 {
+                    var listError = new List<string>();
+                    listError.Add("Cadastro não encontrado");
+
                     //Retornar error da consulta
-                    output.AddError(getLogin.ReturnCode, getLogin.Error.MenssageError);
+                    output.AddError(ReturnCode.failed, listError.ToArray());
                 }
                 else
                 {
