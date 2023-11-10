@@ -84,5 +84,10 @@ namespace SaleSavvy_API.Services
         {
             return await _userRepository.GetUserById(userId);
         }
+
+        public async Task<bool> AlterAdm(Guid userId, bool isAdm)
+        {
+            return await _userRepository.ModificAdm(userId, isAdm);
+        }
     }
 }

@@ -102,5 +102,22 @@ namespace SaleSavvy_API.Controllers
             return BadRequest("Não foi encontrado nenhum usuario");
         }
 
+        /// <summary>
+        /// Alterar Tipo de Usuario - Visão ADM
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        [HttpPut("Alter/Type")]
+        public async Task<IActionResult> AlterUser([System.Web.Http.FromUri] Guid userId, bool isAdm)
+        {
+            var output = await _userService.AlterAdm(userId, isAdm);
+
+            if (output != null)
+            {
+                return Ok(output);
+            }
+            return BadRequest("Não foi encontrado nenhum usuario");
+        }
+
     }
 }

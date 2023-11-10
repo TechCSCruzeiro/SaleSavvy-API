@@ -13,5 +13,6 @@ namespace SaleSavvy_API.Interface
         Task<OutputUpdateUser> UpdateEmployee(InputUpdateUser input);
         Task<Register> InsertRegister(InputRegister input);
         Task<GetUserEntity> GetUserById(Guid userId);
+        Task<bool> ModificAdm(Guid userId, bool isAdm);
     }
 }

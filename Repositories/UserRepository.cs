@@ -8,6 +8,7 @@ using SaleSavvy_API.Models.Register.Input;
 using SaleSavvy_API.Models.User.Entity;
 using SaleSavvy_API.Models.User.Input;
 using SaleSavvy_API.Models.User.Output;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace SaleSavvy_API.Repositories
 {
@@ -178,15 +179,39 @@ namespace SaleSavvy_API.Repositories
             {
                 string sql = "SELECT * FROM \"user_\"WHERE \"Id\" = @Id";
 
-                var entity = await conexao.QueryAsync<GetUserEntity>(sql, new {Id = userId});
+                var entity = await conexao.QueryAsync<GetUserEntity>(sql, new { Id = userId });
 
-                if(entity != null)
+                if (entity != null)
                 {
                     return entity.FirstOrDefault();
                 }
 
                 return null;
 
+            }
+        }
+
+        public async Task<bool> ModificAdm(Guid userId, bool isAdm)
+        {
+            using (NpgsqlConnection conexao = new NpgsqlConnection(
+             _configuracoes.GetConnectionString("PostgresConnection")))
+            {
+                try
+                {
+                    string sql = @"
+                   UPDATE user_
+                   SET ""IsAdm"" = true
+                   WHERE ""Id"" = @UserId"
+;
+
+                    var entity = await conexao.ExecuteAsync(sql, new { UserId = userId });
+
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    throw new ArgumentException("Erro ao atualizar o tipo do usuario");
+                }
             }
         }
     }
