@@ -1,11 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SaleSavvy_API.Interface;
 using SaleSavvy_API.Models;
-using SaleSavvy_API.Models.MovementRecords;
-using SaleSavvy_API.Services;
+using SaleSavvy_API.Models.Client;
+using SaleSavvy_API.Models.MovementRecords.Input;
 
 namespace SaleSavvy_API.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[Controller]")]
     public class MovementRecordsController : Controller
@@ -16,8 +18,13 @@ namespace SaleSavvy_API.Controllers
             _movementRecordsService = movementRecordsService;
         }
 
+        /// <summary>
+        /// Gerar Relatorio de Movimentação de Estoque
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
         [HttpPost("record/movement/stock")]
-        public async Task<IActionResult> GenerateRecordMovementStock(InputRecordStock input) 
+        public async Task<IActionResult> GenerateRecordMovementStock(InputRecord input) 
         {
             var output = await _movementRecordsService.CreateMovementRecordStock(input);
 
@@ -29,8 +36,13 @@ namespace SaleSavvy_API.Controllers
             return BadRequest();
         }
 
+        /// <summary>
+        /// Gerar Relatório de Estoque
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
         [HttpPost("record/stock")]
-        public async Task<IActionResult> GenareteRecordStock(InputRecordStock input)
+        public async Task<IActionResult> GenerateRecordStock(InputRecord input)
         {
             var output = await _movementRecordsService.CreateRecordStock(input);
 
@@ -42,6 +54,29 @@ namespace SaleSavvy_API.Controllers
             return BadRequest();
         }
 
+        /// <summary>
+        /// Gerar Relatório de Vendas
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        [HttpPost("record/salles")]
+        public async Task<IActionResult> GenareteRecordStock(InputRecord input)
+        {
+            var output = await _movementRecordsService.CreateSallesRecord(input);
+
+            if (output != null)
+            {
+                return Ok(output);
+            }
+
+            return BadRequest();
+        }
+
+        /// <summary>
+        /// Baixar Relatórios Gerados
+        /// </summary>
+        /// <param name="fileId"></param>
+        /// <returns></returns>
         [HttpGet("api/excel/download")]
         public async Task<IActionResult> DownloadRecord([System.Web.Http.FromUri] Guid fileId)
         {

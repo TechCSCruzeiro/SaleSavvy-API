@@ -1,11 +1,8 @@
 ﻿using SaleSavvy_API.Interface;
 using SaleSavvy_API.Models;
-using SaleSavvy_API.Models.Login;
 using SaleSavvy_API.Models.Login.Input;
 using SaleSavvy_API.Models.Login.Output;
-using SaleSavvy_API.Models.Register;
-using SaleSavvy_API.Models.Register.Input;
-using SaleSavvy_API.Models.Register.Output;
+using SaleSavvy_API.Models.Validates;
 
 namespace SaleSavvy_API.Services
 {

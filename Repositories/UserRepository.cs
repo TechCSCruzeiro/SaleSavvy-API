@@ -1,19 +1,13 @@
-﻿using Microsoft.Data.SqlClient;
-using SaleSavvy_API.Interface;
-using SaleSavvy_API.Models.Login.Entity;
-using SaleSavvy_API.Models.Login.Input;
-using SaleSavvy_API.Models.Login;
-using System.Data;
-using Dapper;
-using SaleSavvy_API.Models.GetUser;
-using SaleSavvy_API.Models.GetUser.Entity;
-using System.Diagnostics.Eventing.Reader;
-using SaleSavvy_API.Models;
-using System.Data.Common;
-using SaleSavvy_API.Models.UpdateUser;
+﻿using Dapper;
 using Npgsql;
-using SaleSavvy_API.Models.Register.Input;
+using SaleSavvy_API.Interface;
+using SaleSavvy_API.Models;
+using SaleSavvy_API.Models.Login.Entity;
 using SaleSavvy_API.Models.Register;
+using SaleSavvy_API.Models.Register.Input;
+using SaleSavvy_API.Models.User.Entity;
+using SaleSavvy_API.Models.User.Input;
+using SaleSavvy_API.Models.User.Output;
 
 namespace SaleSavvy_API.Repositories
 {

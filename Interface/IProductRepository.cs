@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using SaleSavvy_API.Models;
 using SaleSavvy_API.Models.Products;
+using SaleSavvy_API.Models.Products.Input;
+using SaleSavvy_API.Models.Products.Output;
 
 namespace SaleSavvy_API.Interface
 {

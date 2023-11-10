@@ -1,6 +1,10 @@
 ﻿using SaleSavvy_API.Interface;
 using SaleSavvy_API.Models;
+using SaleSavvy_API.Models.MovementRecords;
 using SaleSavvy_API.Models.Products;
+using SaleSavvy_API.Models.Products.Input;
+using SaleSavvy_API.Models.Products.Output;
+using SaleSavvy_API.Models.Validates;
 
 namespace SaleSavvy_API.Services
 {
@@ -30,7 +34,7 @@ namespace SaleSavvy_API.Services
 
             if(insertProduct.ReturnCode == Models.ReturnCode.exito) 
             {
-                var output = await _movementRecordsRepository.SaveRecord(Models.StatusMovementRecords.Entrada, new InputProduct(input, id));
+                var output = await _movementRecordsRepository.SaveRecord(StatusMovementRecords.Entrada, new InputProduct(input, id));
                 return output;
             }
 

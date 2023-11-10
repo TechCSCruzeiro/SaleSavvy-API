@@ -1,10 +1,8 @@
-﻿using SaleSavvy_API.Models;
-using SaleSavvy_API.Models.GetUser;
-using SaleSavvy_API.Models.GetUser.Entity;
-using SaleSavvy_API.Models.Login;
+﻿using SaleSavvy_API.Models.Register;
 using SaleSavvy_API.Models.Register.Input;
-using SaleSavvy_API.Models.Register;
-using SaleSavvy_API.Models.UpdateUser;
+using SaleSavvy_API.Models.User.Entity;
+using SaleSavvy_API.Models.User.Input;
+using SaleSavvy_API.Models.User.Output;
 
 namespace SaleSavvy_API.Interface
 {

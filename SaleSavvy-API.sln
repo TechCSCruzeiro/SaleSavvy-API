@@ -5,6 +5,8 @@ VisualStudioVersion = 17.5.33516.290
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SaleSavvy-API", "SaleSavvy-API.csproj", "{81BCEBB2-F646-4479-BFF5-FD787CE72935}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SaleSavvy-Test", "..\SaleSavvy-Test\SaleSavvy-Test.csproj", "{65296001-32C4-49DD-98D7-0A57DBF31041}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{81BCEBB2-F646-4479-BFF5-FD787CE72935}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{81BCEBB2-F646-4479-BFF5-FD787CE72935}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{81BCEBB2-F646-4479-BFF5-FD787CE72935}.Release|Any CPU.Build.0 = Release|Any CPU
+		{65296001-32C4-49DD-98D7-0A57DBF31041}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{65296001-32C4-49DD-98D7-0A57DBF31041}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{65296001-32C4-49DD-98D7-0A57DBF31041}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{65296001-32C4-49DD-98D7-0A57DBF31041}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -13,6 +13,7 @@
             this.Quantity = product.Quantity;
             this.Name = product.Name;
             this.Id = product.Id;
+            this.IsActive = product.IsActive;
         }
 
         public Guid? Id { get; set; }
@@ -21,5 +22,6 @@
         public decimal Price { get; set; }
         public int Quantity { get; set; }
         public string? CreationDate { get; set; }
+        public bool? IsActive { get; set; }
     }
 }

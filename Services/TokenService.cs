@@ -1,5 +1,4 @@
 ﻿using Microsoft.IdentityModel.Tokens;
-using SaleSavvy_API.Models.Login;
 using SaleSavvy_API.Models.Login.Output;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;

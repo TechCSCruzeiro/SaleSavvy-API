@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using SaleSavvy_API.Interface;
 using SaleSavvy_API.Models;
 using SaleSavvy_API.Models.Register.Input;
-using SaleSavvy_API.Models.UpdateUser;
+using SaleSavvy_API.Models.User.Input;
 
 namespace SaleSavvy_API.Controllers
 {
@@ -18,6 +18,11 @@ namespace SaleSavvy_API.Controllers
             _userService = autenticationService;
         }
 
+        /// <summary>
+        /// Cadastrar Usuario - Visão ADM
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
         [HttpPost("register")]
         public async Task<IActionResult> RegisterUser(InputRegister input)
         {
@@ -30,7 +35,10 @@ namespace SaleSavvy_API.Controllers
             return BadRequest(output);
         }
 
-
+        /// <summary>
+        /// Lista Usuario - Visão ADM
+        /// </summary>
+        /// <returns></returns>
         [HttpGet("listUser")]
         public async Task<IActionResult> GetUser()
         {
@@ -43,7 +51,11 @@ namespace SaleSavvy_API.Controllers
             return BadRequest("Não foi encontrado nenhum usuario");
         }
 
-
+        /// <summary>
+        /// Deletar Usuario - Visão ADM
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpDelete("deleteUser/{id}")]
         public async Task<IActionResult> DeleteUser(Guid id)
         {
@@ -56,7 +68,11 @@ namespace SaleSavvy_API.Controllers
             return NotFound("Usuário não encontrado");
         }
 
-
+        /// <summary>
+        /// Atualizar Usuario - Visão ADM
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
         [HttpPut("updateUser")]
         public async Task<IActionResult> UpdateUser([FromBody] InputUpdateUser input)
         {
@@ -69,6 +85,11 @@ namespace SaleSavvy_API.Controllers
             return BadRequest(output.Error.MenssageError);
         }
 
+        /// <summary>
+        /// Buscar Usuario por Id - Visão ADM
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
         [HttpGet("findUserById/{userId}")]
         public async Task<IActionResult> GetUser([System.Web.Http.FromUri] Guid userId)
         {

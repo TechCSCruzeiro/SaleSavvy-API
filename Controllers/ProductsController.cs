@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SaleSavvy_API.Interface;
 using SaleSavvy_API.Models;
-using SaleSavvy_API.Models.Products;
+using SaleSavvy_API.Models.Products.Input;
 using SaleSavvy_API.Services;
 using System;
 using System.Threading.Tasks;
@@ -21,6 +21,11 @@ namespace SaleSavvy_API.Controllers
             _productsService = productsService;
         }
 
+        /// <summary>
+        /// Cadastrar Produto por Usuario
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
         [HttpPost("InsertProduct")]
         public async Task<IActionResult> InsertProduct([FromBody] InputSaveProduct input)
         {
@@ -35,6 +40,11 @@ namespace SaleSavvy_API.Controllers
 
         }
 
+        /// <summary>
+        /// Consultar Lista de Produto por Usuario
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
         [HttpGet("ListProduct")]
         public async Task<IActionResult> GetProduct([System.Web.Http.FromUri] Guid userId)
         {
@@ -50,6 +60,11 @@ namespace SaleSavvy_API.Controllers
 
         }
 
+        /// <summary>
+        /// Editar Produto por usuario
+        /// </summary>
+        /// <param name="product"></param>
+        /// <returns></returns>
         [HttpPut("ModificProduct")]
         public async Task<IActionResult> ModificProduct(InputProduct product)
         {
@@ -62,6 +77,11 @@ namespace SaleSavvy_API.Controllers
             return NotFound(output.Error.MenssageError);
         }
 
+        /// <summary>
+        /// Desativar Produto por Usuario
+        /// </summary>
+        /// <param name="productId"></param>
+        /// <returns></returns>
         [HttpDelete("DesactiveProduct")]
         public async Task<IActionResult> DeleteProduct([System.Web.Http.FromUri] Guid productId)
         {
@@ -74,6 +94,11 @@ namespace SaleSavvy_API.Controllers
             return NotFound(output.Error.MenssageError);
         }
 
+        /// <summary>
+        /// Buscar produto por Id
+        /// </summary>
+        /// <param name="productId"></param>
+        /// <returns></returns>
         [HttpGet("Find/ProductById")]
         public async Task<IActionResult> GetProductById([System.Web.Http.FromUri] Guid productId)
         {

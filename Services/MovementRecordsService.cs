@@ -1,9 +1,5 @@
-﻿using Azure;
-using Microsoft.AspNetCore.Mvc;
-using SaleSavvy_API.Interface;
-using SaleSavvy_API.Models.Login;
-using SaleSavvy_API.Models.MovementRecords;
-using System.Net.Mime;
+﻿using SaleSavvy_API.Interface;
+using SaleSavvy_API.Models.MovementRecords.Input;
 
 namespace SaleSavvy_API.Services
 {
@@ -22,7 +18,7 @@ namespace SaleSavvy_API.Services
             _hostingEnvironment = hostingEnvironment;
         }
 
-        public async Task<Guid> CreateMovementRecordStock(InputRecordStock input)
+        public async Task<Guid> CreateMovementRecordStock(InputRecord input)
         {
             var data = await _movementRecordsRepository.GetStockMovementReportInfo(input);
 
@@ -31,13 +27,28 @@ namespace SaleSavvy_API.Services
             return fileId;
         }
 
-        public async Task<Guid> CreateRecordStock(InputRecordStock input)
+        public async Task<Guid> CreateSallesRecord(InputRecord input)
+        {
+            var data = await _movementRecordsRepository.GetSallesReportInfo(input);
+
+            var fileId = await _record.GenerateSallesRecordFile(data);
+
+            return fileId;
+        }
+
+        public async Task<Guid> CreateRecordStock(InputRecord input)
         {
             var data = await _movementRecordsRepository.GetStockReportInfo(input);
 
-            var fileId = await _record.GenerateExcelFile(data);
+            if(data != null)
+            {
+                var fileId = await _record.GenerateRecordStockFile(data);
 
-            return fileId;
+                return fileId;
+            }
+
+            return Guid.Empty;
+
         }
 
         public async Task<string> SearchRecord(Guid fileId)
@@ -55,5 +66,7 @@ namespace SaleSavvy_API.Services
 
             return null;
         }
+
+
     }
 }

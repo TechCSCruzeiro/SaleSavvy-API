@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.OpenApi.Models;
-using SaleSavvy_API;
 using SaleSavvy_API.Interface;
+using SaleSavvy_API.Models.MovementRecords;
 using SaleSavvy_API.Repositories;
 using SaleSavvy_API.Services;
 using System.Text;
@@ -16,6 +16,9 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
     //tipo de autenticação
+
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "SalleSavy", Version = "v1" });
+
     c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
     {
         //Tipo de autenticação
@@ -50,12 +53,17 @@ builder.Services.AddSingleton<IUserService, UserService>();
 builder.Services.AddSingleton<IProductsService, ProductsService>();
 builder.Services.AddSingleton<IClientService, ClientService>();
 builder.Services.AddSingleton<IMovementRecordsService, MovementRecordsService>();
+builder.Services.AddSingleton<IClientService, ClientService>();
+builder.Services.AddSingleton<ISalesService, SalesService>();
 
 builder.Services.AddSingleton<IAutenticationRepository, AutenticationRepository>();
 builder.Services.AddSingleton<IUserRepository, UserRepository>();
 builder.Services.AddSingleton<IProductRepository, ProductRepository>();
 builder.Services.AddSingleton<IClientRepository, ClientRepository>();
 builder.Services.AddSingleton<IMovementRecordsRepository, MovementRecordsRepository>();
+builder.Services.AddSingleton<IClientRepository, ClientRepository>();
+builder.Services.AddSingleton<IPaymentRepository, PaymentRepository>();
+builder.Services.AddSingleton<ISalesRepository, SalesRepository>();
 
 builder.Services.AddSingleton<IRecord, Record>();
 
@@ -102,7 +110,16 @@ app.UseAuthentication();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "SalleSavy API V1");
+
+        // Configurações adicionais para autenticação com JWT no Swagger
+        c.OAuthClientId("swagger-ui");
+        c.OAuthClientSecret("swagger-ui-secret");
+        c.OAuthRealm("swagger-ui-realm");
+        c.OAuthAppName("Swagger UI");
+    });
 }
 
 app.UseHttpsRedirection();

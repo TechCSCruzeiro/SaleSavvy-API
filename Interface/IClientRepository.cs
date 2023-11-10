@@ -1,4 +1,6 @@
 ﻿using SaleSavvy_API.Models.Client;
+using SaleSavvy_API.Models.Client.Input;
+using SaleSavvy_API.Models.Client.Output;
 
 namespace SaleSavvy_API.Interface
 {
@@ -7,5 +9,7 @@ namespace SaleSavvy_API.Interface
         Task<OutputClient> AddClient (InputClient customer, Guid id);
 
         Task<OutputGetClient> GetClientById(Guid id);
+        Task<Client> GetClientBy(string email, string name);
+        Task<List<Client>> GetAll(Guid userId);
     }
 }

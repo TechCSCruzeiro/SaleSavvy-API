@@ -4,7 +4,9 @@ using Npgsql;
 using SaleSavvy_API.Interface;
 using SaleSavvy_API.Models;
 using SaleSavvy_API.Models.Client;
-using SaleSavvy_API.Models.GetUser.Entity;
+using SaleSavvy_API.Models.Client.Entity;
+using SaleSavvy_API.Models.Client.Input;
+using SaleSavvy_API.Models.Client.Output;
 
 namespace SaleSavvy_API.Repositories
 {
@@ -45,7 +47,7 @@ namespace SaleSavvy_API.Repositories
                     if (entity.Equals(0))
                     {
                         var listError = new List<string>();
-                        listError.Add("Produto já existe");
+                        listError.Add("Cliente já existe");
                         output.AddError(listError.ToArray());
                     }
                     else
@@ -81,5 +83,60 @@ namespace SaleSavvy_API.Repositories
 
             }
         }
+
+        public async Task<List<Client>> GetAll(Guid userId)
+        {
+            using (NpgsqlConnection connection = new NpgsqlConnection(
+                _configuracoes.GetConnectionString("PostgresConnection")))
+            {
+                string sql = "SELECT * FROM \"client\" WHERE \"UserId\" = @UserId";
+
+                var entities = await connection.QueryAsync<ClientEntity>(sql, new { UserId = userId });
+
+                var clients = entities.Select(clientInfo => new Client
+                {
+                    Name = clientInfo.Name,
+                    Phone = clientInfo.Phone,
+                    Email = clientInfo.Email,
+                    Id = clientInfo.Id,
+                    UserId = clientInfo.UserId,
+                    Address = JsonConvert.DeserializeObject<Address>(clientInfo.Address)
+                }).ToList();
+
+                return clients;
+            }
+        }
+
+        public async Task<Client> GetClientBy(string email, string name)
+        {
+            using (NpgsqlConnection connection = new NpgsqlConnection(
+             _configuracoes.GetConnectionString("PostgresConnection")))
+            {
+                string sql = @"
+                    SELECT *
+                    FROM ""client""
+                    WHERE ""Name"" = @Name OR ""Email"" = @Email";
+
+                var entity = await connection.QueryAsync<ClientEntity>(sql, new { Name = name, Email = email});
+
+                if(entity.Count() != 0)
+                {
+                    var adress = JsonConvert.DeserializeObject<Address>(entity.FirstOrDefault().Address) ;
+
+                    var output = new Client
+                    {
+                        Name = entity.FirstOrDefault().Name,
+                        Phone = entity.FirstOrDefault().Phone,
+                        Email = entity.FirstOrDefault().Email,
+                        Id = entity.FirstOrDefault().Id,
+                        UserId = entity.FirstOrDefault().UserId,
+                        Address = adress
+                    };
+                }
+
+                return null;
+            }
+        }
+
     }
 }

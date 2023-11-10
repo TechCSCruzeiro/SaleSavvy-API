@@ -1,16 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Dapper;
 using Microsoft.Data.SqlClient;
-using SaleSavvy_API.Interface;
-using SaleSavvy_API.Models.Login.Entity;
-using SaleSavvy_API.Models.Login;
-using System.Data;
-using Dapper;
-using SaleSavvy_API.Models.Products;
-using SaleSavvy_API.Models;
 using Npgsql;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
-using SaleSavvy_API.Models.UpdateUser;
-using System.Collections.Generic;
+using SaleSavvy_API.Interface;
+using SaleSavvy_API.Models;
+using SaleSavvy_API.Models.Login.Entity;
+using SaleSavvy_API.Models.Products;
+using SaleSavvy_API.Models.Products.Input;
+using SaleSavvy_API.Models.Products.Output;
 
 namespace SaleSavvy_API.Repositories
 {
@@ -78,7 +74,7 @@ namespace SaleSavvy_API.Repositories
                               Name = product.Name,
                               Description = product.Description,
                               Price = product.Price,
-                              Quantity = product.Quantity,
+                              Quantity = product.CurrentQuantity,
                               IsActive = product.IsActive
                         });
 

@@ -1,6 +1,9 @@
 ﻿using SaleSavvy_API.Interface;
 using SaleSavvy_API.Models;
 using SaleSavvy_API.Models.Client;
+using SaleSavvy_API.Models.Client.Input;
+using SaleSavvy_API.Models.Client.Output;
+using SaleSavvy_API.Models.Validates;
 
 namespace SaleSavvy_API.Services
 {
@@ -29,20 +32,65 @@ namespace SaleSavvy_API.Services
                 {
                     listError.Add("Usuario não encontrado");
                     output.AddError(listError.ToArray());
-                }
-
-                var validateId = await _clientRepository.GetClientById(id);
-
-                if (validateId != null)
-                {
-                    listError.Add("Id de usuario ja existe");
-                    output.AddError(listError.ToArray());
 
                     return output;
                 }
 
-                output = await _clientRepository.AddClient(input, id);
+                var getClient = await _clientRepository.GetClientBy(input.Email, input.Name);
+
+                if (getClient != null)
+                {
+
+                    var validateClient = new ValidateClient().ValidateDuplicate(input, getClient);
+
+                    if (validateClient.ReturnCode == ReturnCode.failed)
+                    {
+                        output.AddError(validateClient.Error.MenssageError);
+
+                        return output;
+                    }
+                }
             }
+
+            output = await _clientRepository.AddClient(input, id);
+
+            if (output.ReturnCode == ReturnCode.failed)
+            {
+                output.AddError(output.Error.MenssageError);
+            }
+
+            return output;
+        }
+
+
+        public async Task<OutputGetClient> GetClient(Guid clientId)
+        {
+            var output = await _clientRepository.GetClientById(clientId);
+
+            if (output == null)
+            {
+                return null;
+            }
+
+            return output;
+        }
+
+        public async Task<List<Client>> GetListClient(Guid userId)
+        {
+            var validateUser = await _userRepository.GetUserById(userId);
+
+            if (validateUser == null)
+            {
+                throw new ArgumentException("Usuario não encontrado");
+            }
+
+            var output = await _clientRepository.GetAll(userId);
+
+            if (output == null)
+            {
+                throw new ArgumentException("Clientes deste usuario não encontrado");
+            }
+
             return output;
         }
     }
