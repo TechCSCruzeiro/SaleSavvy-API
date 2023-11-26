@@ -56,10 +56,11 @@ namespace SaleSavvy_API.Controllers
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        [HttpPost("Search/ListClient")]
-        public async Task<IActionResult> SearchListClient(Guid userId)
+        [HttpGet("Search/ListClient")]
+        public async Task<IActionResult> SearchListClient([System.Web.Http.FromUri]string userId)
         {
-            var output = await _clientService.GetListClient(userId);
+            
+            var output =  _clientService.GetListClient(Guid.Parse(userId));
 
             if (output != null)
             {
