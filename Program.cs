@@ -10,12 +10,7 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-Host.CreateDefaultBuilder(args)
-    .ConfigureWebHostDefaults(web =>
-    {
-        web.UseStartup<Program>()
-        .UseUrls("http://*:5000");
-    });
+builder.WebHost.UseUrls("http://0.0.0.0:5000");
 
 // Add services to the container.
 builder.Services.AddControllers();
@@ -132,12 +127,17 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseRouting();
+
 app.UseCors("AllowAllOrigins");
 app.UseAuthorization();
 
 app.UseEndpoints(endpoints =>
 {
     endpoints.MapControllers();
+    endpoints.MapGet("/", async context =>
+    {
+        await context.Response.WriteAsync("Hello, world!");
+    });
 });
 
 app.Run();
