@@ -7,7 +7,15 @@ using SaleSavvy_API.Repositories;
 using SaleSavvy_API.Services;
 using System.Text;
 
+
 var builder = WebApplication.CreateBuilder(args);
+
+Host.CreateDefaultBuilder(args)
+    .ConfigureWebHostDefaults(web =>
+    {
+        web.UseStartup<Program>()
+        .UseUrls("http://*:5000");
+    });
 
 // Add services to the container.
 builder.Services.AddControllers();
