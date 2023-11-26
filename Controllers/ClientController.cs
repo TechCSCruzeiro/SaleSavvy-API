@@ -60,7 +60,7 @@ namespace SaleSavvy_API.Controllers
         public async Task<IActionResult> SearchListClient([System.Web.Http.FromUri]string userId)
         {
             
-            var output =  _clientService.GetListClient(Guid.Parse(userId));
+            var output =  await _clientService.GetListClient(Guid.Parse(userId));
 
             if (output != null)
             {
