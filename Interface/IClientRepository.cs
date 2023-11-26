@@ -8,7 +8,7 @@ namespace SaleSavvy_API.Interface
     {
         Task<OutputClient> AddClient (InputClient customer, Guid id);
 
-        Task<OutputGetClient> GetClientById(Guid id);
+        Task<Client> GetClientById(Guid id);
         Task<Client> GetClientBy(string email, string name);
         Task<List<Client>> GetAll(Guid userId);
     }

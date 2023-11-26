@@ -65,22 +65,31 @@ namespace SaleSavvy_API.Repositories
             }
         }
 
-        public async Task<OutputGetClient> GetClientById(Guid id)
+        public async Task<Client> GetClientById(Guid id)
         {
             using (NpgsqlConnection connection = new NpgsqlConnection(
               _configuracoes.GetConnectionString("PostgresConnection")))
             {
                 string sql = "SELECT * FROM \"client\"WHERE \"Id\" = @Id";
 
-                var entity = await connection.QueryAsync<OutputGetClient>(sql, new { Id = id });
+                var entity =  connection.Query<ClientEntity>(sql, new { Id = id }).FirstOrDefault();
 
                 if (entity != null)
                 {
-                    return entity.FirstOrDefault();
+                    var client = new Client
+                    {
+                        Name = entity.Name,
+                        Phone = entity.Phone,
+                        Email = entity.Email,
+                        Id = entity.Id,
+                        UserId = entity.UserId,
+                        Address = JsonConvert.DeserializeObject<Address>(entity.Address)
+                    };
+
+                    return client;
                 }
 
                 return null;
-
             }
         }
 

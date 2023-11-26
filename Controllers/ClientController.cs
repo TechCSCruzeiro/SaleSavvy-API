@@ -48,7 +48,7 @@ namespace SaleSavvy_API.Controllers
             {
                 return Ok(output);
             }
-            return BadRequest("Não foi encontrado nenhum Cliente");
+            return NotFound("Cliente não encontrado");
         }
 
         /// <summary>

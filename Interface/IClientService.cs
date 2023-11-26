@@ -7,7 +7,7 @@ namespace SaleSavvy_API.Interface
     public interface IClientService
     {
         Task<OutputClient> RegisterClient(InputClient input);
-        Task<OutputGetClient> GetClient(Guid clientId);
+        Task<Client> GetClient(Guid clientId);
         Task<List<Client>> GetListClient(Guid userId);
     }
 }

@@ -40,7 +40,6 @@ namespace SaleSavvy_API.Services
 
                 if (getClient != null)
                 {
-
                     var validateClient = new ValidateClient().ValidateDuplicate(input, getClient);
 
                     if (validateClient.ReturnCode == ReturnCode.failed)
@@ -63,16 +62,16 @@ namespace SaleSavvy_API.Services
         }
 
 
-        public async Task<OutputGetClient> GetClient(Guid clientId)
+        public async Task<Client> GetClient(Guid clientId)
         {
             var output = await _clientRepository.GetClientById(clientId);
 
-            if (output == null)
+            if (output != null)
             {
-                return null;
+                return output; 
             }
 
-            return output;
+            return null;
         }
 
         public async Task<List<Client>> GetListClient(Guid userId)
